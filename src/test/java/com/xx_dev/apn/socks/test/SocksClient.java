@@ -13,22 +13,26 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.xx_dev.apn.socks;
 
-import io.netty.bootstrap.ServerBootstrap;
+package com.xx_dev.apn.socks.test;
+
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import javax.xml.parsers.FactoryConfigurationError;
 import java.io.File;
 import java.net.MalformedURLException;
 
-public final class SocksServer {
-
+/**
+ * @author xmx
+ * @version $Id: com.xx_dev.apn.socks.test.SocksClient 2015-02-28 15:41 (xmx) Exp $
+ */
+public class SocksClient {
     static {
         File log4jConfigFile = new File("conf/log4j.xml");
         if (log4jConfigFile.exists()) {
@@ -42,21 +46,18 @@ public final class SocksServer {
         }
     }
 
-    static final int PORT = Integer.parseInt(System.getProperty("port", "8888"));
+    public static void main(String[] args) throws Throwable {
+        EventLoopGroup group = new NioEventLoopGroup();
 
-    public static void main(String[] args) throws Exception {
-        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
-        try {
-            ServerBootstrap b = new ServerBootstrap();
-            b.group(bossGroup, workerGroup)
-             .channel(NioServerSocketChannel.class)
-             .handler(new LoggingHandler("NET_LOGGER", LogLevel.DEBUG))
-             .childHandler(new SocksServerInitializer());
-            b.bind(PORT).sync().channel().closeFuture().sync();
-        } finally {
-            bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
-        }
+        Bootstrap b = new Bootstrap();
+        b.group(group).channel(NioSocketChannel.class)
+         .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
+         .option(ChannelOption.SO_KEEPALIVE, true)
+         .handler(new SocksClientInitializer());
+
+        // Make the connection attempt.
+        b.connect("112.124.38.73", 8888).sync().channel().closeFuture().sync();
+
+        group.shutdownGracefully();
     }
 }
