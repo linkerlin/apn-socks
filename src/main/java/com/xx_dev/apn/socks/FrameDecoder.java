@@ -36,6 +36,10 @@ public class FrameDecoder extends ReplayingDecoder<FrameDecoder.STATE> {
 
     private int length;
 
+    public FrameDecoder() {
+        super(STATE.READ_MAGIC_NUMBER);
+    }
+
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         switch (this.state()) {
