@@ -16,6 +16,8 @@
 
 package com.xx_dev.apn.socks.test;
 
+import com.xx_dev.apn.socks.FrameDecoder;
+import com.xx_dev.apn.socks.FrameEncoder;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -33,6 +35,10 @@ public class SocksClientInitializer extends ChannelInitializer<SocketChannel> {
     @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
         ChannelPipeline p = socketChannel.pipeline();
+
+        p.addLast(new FrameDecoder());
+        p.addLast(new FrameEncoder());
+
         p.addLast("log", new LoggingHandler("BYTE_LOGGER", LogLevel.DEBUG));
         p.addLast(new SocksInitResponseDecoder());
         p.addLast(new SocksMessageEncoder());
