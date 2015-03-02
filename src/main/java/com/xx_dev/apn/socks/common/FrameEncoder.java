@@ -14,18 +14,16 @@
  * under the License.
  */
 
-package com.xx_dev.apn.socks;
+package com.xx_dev.apn.socks.common;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import org.apache.log4j.Logger;
 
-import javax.crypto.Cipher;
-
 /**
  * @author xmx
- * @version $Id: com.xx_dev.apn.socks.FrameEncoder 2015-02-28 18:12 (xmx) Exp $
+ * @version $Id: com.xx_dev.apn.socks.common.FrameEncoder 2015-02-28 18:12 (xmx) Exp $
  */
 public class FrameEncoder extends MessageToByteEncoder<ByteBuf> {
     private static final Logger logger = Logger.getLogger(FrameEncoder.class);

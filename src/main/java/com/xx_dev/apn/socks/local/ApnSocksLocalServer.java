@@ -13,50 +13,51 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.xx_dev.apn.socks;
 
+package com.xx_dev.apn.socks.local;
+
+import com.xx_dev.apn.socks.util.LoggerUtil;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.UnpooledByteBufAllocator;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.log4j.Logger;
 
-import javax.xml.parsers.FactoryConfigurationError;
-import java.io.File;
-import java.net.MalformedURLException;
+public final class ApnSocksLocalServer {
 
-public final class SocksServer {
+    private static final Logger logger = Logger.getLogger(ApnSocksLocalServer.class);
 
-    static {
-        File log4jConfigFile = new File("conf/log4j.xml");
-        if (log4jConfigFile.exists()) {
-            try {
-                DOMConfigurator.configure(log4jConfigFile.toURI().toURL());
-            } catch (MalformedURLException e) {
-                System.err.println(e);
-            } catch (FactoryConfigurationError e) {
-                System.err.println(e);
-            }
-        }
-    }
+    private static final int PORT = Integer.parseInt(System.getProperty("port", "8866"));
 
-    static final int PORT = Integer.parseInt(System.getProperty("port", "8888"));
+    private EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+    private EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-    public static void main(String[] args) throws Exception {
-        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+    public void start() {
+        LoggerUtil.info(logger, "ApnSocks Local Server Starting on 8866");
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
              .channel(NioServerSocketChannel.class)
+             .childOption(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT)
              .handler(new LoggingHandler("NET_LOGGER", LogLevel.DEBUG))
-             .childHandler(new SocksServerInitializer());
+             .childHandler(new ApnSocksLocalServerInitializer());
             b.bind(PORT).sync().channel().closeFuture().sync();
+        } catch(Throwable t) {
+            logger.error(t.getMessage(), t);
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
     }
+
+    public void shutdown() {
+        LoggerUtil.info(logger, "ApnSocks Local Server Shutdown");
+        bossGroup.shutdownGracefully();
+        workerGroup.shutdownGracefully();
+    }
+
 }

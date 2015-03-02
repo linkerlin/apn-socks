@@ -14,14 +14,8 @@
  * under the License.
  */
 
-package com.xx_dev.apn.socks.test;
+package com.xx_dev.apn.socks.remote;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import javax.xml.parsers.FactoryConfigurationError;
@@ -30,9 +24,10 @@ import java.net.MalformedURLException;
 
 /**
  * @author xmx
- * @version $Id: com.xx_dev.apn.socks.test.SocksClient 2015-02-28 15:41 (xmx) Exp $
+ * @version $Id: com.xx_dev.apn.socks.remote.ApnSocksRemoteServerLauncher 2015-03-01 13:42 (xmx) Exp $
  */
-public class SocksClient {
+public class ApnSocksRemoteServerLauncher {
+
     static {
         File log4jConfigFile = new File("conf/log4j.xml");
         if (log4jConfigFile.exists()) {
@@ -46,18 +41,9 @@ public class SocksClient {
         }
     }
 
-    public static void main(String[] args) throws Throwable {
-        EventLoopGroup group = new NioEventLoopGroup();
-
-        Bootstrap b = new Bootstrap();
-        b.group(group).channel(NioSocketChannel.class)
-         .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
-         .option(ChannelOption.SO_KEEPALIVE, true)
-         .handler(new SocksClientInitializer());
-
-        // Make the connection attempt.
-        b.connect("", 8888).sync().channel().closeFuture().sync();
-
-        group.shutdownGracefully();
+    public static void main(String[] args) {
+        ApnSocksRemoteServer server = new ApnSocksRemoteServer();
+        server.start();
     }
+
 }

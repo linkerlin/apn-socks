@@ -13,27 +13,28 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.xx_dev.apn.socks;
 
+package com.xx_dev.apn.socks.local;
+
+import com.xx_dev.apn.socks.common.FrameDecoder;
+import com.xx_dev.apn.socks.common.FrameEncoder;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.socks.SocksCmdRequestDecoder;
 import io.netty.handler.codec.socks.SocksInitRequestDecoder;
 import io.netty.handler.codec.socks.SocksMessageEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
-public final class SocksServerInitializer extends ChannelInitializer<SocketChannel> {
+public final class ApnSocksLocalServerInitializer extends ChannelInitializer<SocketChannel> {
 
     private final SocksMessageEncoder socksMessageEncoder = new SocksMessageEncoder();
-    private final SocksServerHandler socksServerHandler = new SocksServerHandler();
+    private final ApnSocksLocalServerHandler socksServerHandler = new ApnSocksLocalServerHandler();
 
     @Override
     public void initChannel(SocketChannel socketChannel) throws Exception {
         ChannelPipeline p = socketChannel.pipeline();
-
-        p.addLast(new FrameDecoder());
-        p.addLast(new FrameEncoder());
 
         p.addLast("log", new LoggingHandler("BYTE_LOGGER", LogLevel.DEBUG));
         p.addLast(new SocksInitRequestDecoder());

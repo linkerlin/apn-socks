@@ -14,33 +14,34 @@
  * under the License.
  */
 
-package com.xx_dev.apn.socks.test;
+package com.xx_dev.apn.socks.remote;
 
 import com.xx_dev.apn.socks.common.FrameDecoder;
 import com.xx_dev.apn.socks.common.FrameEncoder;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.socks.SocksInitResponseDecoder;
+import io.netty.handler.codec.socks.SocksCmdRequestDecoder;
+import io.netty.handler.codec.socks.SocksInitRequestDecoder;
 import io.netty.handler.codec.socks.SocksMessageEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
-/**
- * @author xmx
- * @version $Id: com.xx_dev.apn.socks.test.SocksClientInitializer 2015-02-28 15:41 (xmx) Exp $
- */
-public class SocksClientInitializer extends ChannelInitializer<SocketChannel> {
+public final class ApnSocksRemoteServerInitializer extends ChannelInitializer<SocketChannel> {
+
+    private final SocksMessageEncoder socksMessageEncoder = new SocksMessageEncoder();
+    private final ApnSocksRemoteServerHandler socksServerHandler = new ApnSocksRemoteServerHandler();
+
     @Override
-    protected void initChannel(SocketChannel socketChannel) throws Exception {
+    public void initChannel(SocketChannel socketChannel) throws Exception {
         ChannelPipeline p = socketChannel.pipeline();
 
         p.addLast(new FrameDecoder());
         p.addLast(new FrameEncoder());
 
         p.addLast("log", new LoggingHandler("BYTE_LOGGER", LogLevel.DEBUG));
-        p.addLast(new SocksInitResponseDecoder());
-        p.addLast(new SocksMessageEncoder());
-        p.addLast(new SocksClientHandler());
+        p.addLast(new SocksCmdRequestDecoder());
+        p.addLast(socksMessageEncoder);
+        p.addLast(socksServerHandler);
     }
 }

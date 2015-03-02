@@ -13,8 +13,10 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.xx_dev.apn.socks;
 
+package com.xx_dev.apn.socks.remote;
+
+import com.xx_dev.apn.socks.util.SocksServerUtils;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -29,7 +31,7 @@ import io.netty.handler.codec.socks.SocksRequest;
 
 
 @ChannelHandler.Sharable
-public final class SocksServerHandler extends SimpleChannelInboundHandler<SocksRequest> {
+public final class ApnSocksRemoteServerHandler extends SimpleChannelInboundHandler<SocksRequest> {
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, SocksRequest socksRequest) throws Exception {
@@ -49,7 +51,7 @@ public final class SocksServerHandler extends SimpleChannelInboundHandler<SocksR
             case CMD:
                 SocksCmdRequest req = (SocksCmdRequest) socksRequest;
                 if (req.cmdType() == SocksCmdType.CONNECT) {
-                    ctx.pipeline().addLast(new SocksServerConnectHandler());
+                    ctx.pipeline().addLast(new ApnSocksRemoteServerConnectHandler());
                     ctx.pipeline().remove(this);
                     ctx.fireChannelRead(socksRequest);
                 } else {

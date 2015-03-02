@@ -13,8 +13,9 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.xx_dev.apn.socks;
+package com.xx_dev.apn.socks.common;
 
+import com.xx_dev.apn.socks.util.SocksServerUtils;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;

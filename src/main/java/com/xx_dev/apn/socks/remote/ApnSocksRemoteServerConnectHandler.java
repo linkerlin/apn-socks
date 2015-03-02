@@ -13,8 +13,12 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.xx_dev.apn.socks;
 
+package com.xx_dev.apn.socks.remote;
+
+import com.xx_dev.apn.socks.common.DirectClientHandler;
+import com.xx_dev.apn.socks.common.RelayHandler;
+import com.xx_dev.apn.socks.util.SocksServerUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -32,12 +36,16 @@ import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.Promise;
 
 @ChannelHandler.Sharable
-public final class SocksServerConnectHandler extends SimpleChannelInboundHandler<SocksCmdRequest> {
+public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInboundHandler<SocksCmdRequest> {
 
     private final Bootstrap b = new Bootstrap();
 
     @Override
     public void channelRead0(final ChannelHandlerContext ctx, final SocksCmdRequest request) throws Exception {
+        directConnect(ctx, request);
+    }
+
+    private void directConnect(final ChannelHandlerContext ctx, final SocksCmdRequest request) throws Exception {
         Promise<Channel> promise = ctx.executor().newPromise();
         promise.addListener(
             new GenericFutureListener<Future<Channel>>() {
@@ -49,7 +57,7 @@ public final class SocksServerConnectHandler extends SimpleChannelInboundHandler
                             .addListener(new ChannelFutureListener() {
                                 @Override
                                 public void operationComplete(ChannelFuture channelFuture) {
-                                    ctx.pipeline().remove(SocksServerConnectHandler.this);
+                                    ctx.pipeline().remove(ApnSocksRemoteServerConnectHandler.this);
                                     outboundChannel.pipeline().addLast(new RelayHandler(ctx.channel()));
                                     ctx.pipeline().addLast(new RelayHandler(outboundChannel));
                                 }

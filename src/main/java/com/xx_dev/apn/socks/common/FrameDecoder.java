@@ -14,7 +14,7 @@
  * under the License.
  */
 
-package com.xx_dev.apn.socks;
+package com.xx_dev.apn.socks.common;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * @author xmx
- * @version $Id: com.xx_dev.apn.socks.FrameDecoder 2015-02-28 18:25 (xmx) Exp $
+ * @version $Id: com.xx_dev.apn.socks.common.FrameDecoder 2015-02-28 18:25 (xmx) Exp $
  */
 public class FrameDecoder extends ReplayingDecoder<FrameDecoder.STATE> {
 
