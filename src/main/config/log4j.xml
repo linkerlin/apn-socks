@@ -29,12 +29,12 @@
     </logger>
 
     <logger name="BYTE_LOGGER" additivity="false">
-        <level value="debug"/>
+        <level value="info"/>
         <appender-ref ref="CONSOLE_APPENDER"/>
     </logger>
 
     <logger name="NET_LOGGER" additivity="false">
-        <level value="debug"/>
+        <level value="info"/>
         <appender-ref ref="CONSOLE_APPENDER"/>
     </logger>
 

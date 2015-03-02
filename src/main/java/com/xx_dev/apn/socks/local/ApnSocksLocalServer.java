@@ -31,7 +31,7 @@ public final class ApnSocksLocalServer {
 
     private static final Logger logger = Logger.getLogger(ApnSocksLocalServer.class);
 
-    private static final int PORT = Integer.parseInt(System.getProperty("port", "8866"));
+    private static final int PORT = Integer.parseInt(System.getProperty("port", "8888"));
 
     private EventLoopGroup bossGroup = new NioEventLoopGroup(1);
     private EventLoopGroup workerGroup = new NioEventLoopGroup();

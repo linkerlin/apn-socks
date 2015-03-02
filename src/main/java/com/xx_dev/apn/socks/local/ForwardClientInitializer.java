@@ -14,34 +14,46 @@
  * under the License.
  */
 
-package com.xx_dev.apn.socks.test;
+package com.xx_dev.apn.socks.local;
 
 import com.xx_dev.apn.socks.common.FrameDecoder;
 import com.xx_dev.apn.socks.common.FrameEncoder;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.socks.SocksCmdRequest;
 import io.netty.handler.codec.socks.SocksCmdResponseDecoder;
 import io.netty.handler.codec.socks.SocksInitResponseDecoder;
 import io.netty.handler.codec.socks.SocksMessageEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.util.concurrent.Promise;
 
 /**
  * @author xmx
- * @version $Id: com.xx_dev.apn.socks.test.SocksClientInitializer 2015-02-28 15:41 (xmx) Exp $
+ * @version $Id: com.xx_dev.apn.socks.local.ForwardClientInitializer 2015-03-02 20:05 (xmx) Exp $
  */
-public class SocksClientInitializer extends ChannelInitializer<SocketChannel> {
+public class ForwardClientInitializer extends ChannelInitializer<SocketChannel> {
+
+    private final Promise<Channel> promise;
+    private final SocksCmdRequest socksCmdRequest;
+
+    public ForwardClientInitializer(Promise<Channel> promise, SocksCmdRequest socksCmdRequest) {
+        this.promise = promise;
+        this.socksCmdRequest = socksCmdRequest;
+    }
+
     @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
         ChannelPipeline p = socketChannel.pipeline();
 
-        //p.addLast(new FrameDecoder());
-        //p.addLast(new FrameEncoder());
+        p.addLast(new FrameDecoder());
+        p.addLast(new FrameEncoder());
 
-        p.addLast("log", new LoggingHandler("BYTE_LOGGER", LogLevel.DEBUG));
-        p.addLast(new SocksInitResponseDecoder());
+        p.addLast(new SocksCmdResponseDecoder());
         p.addLast(new SocksMessageEncoder());
-        p.addLast(new SocksClientHandler());
+        p.addLast(new ForwardClientHandler(promise, socksCmdRequest));
     }
+
 }

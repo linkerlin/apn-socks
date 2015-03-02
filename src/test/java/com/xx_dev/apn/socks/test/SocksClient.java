@@ -56,7 +56,7 @@ public class SocksClient {
          .handler(new SocksClientInitializer());
 
         // Make the connection attempt.
-        b.connect("", 8888).sync().channel().closeFuture().sync();
+        b.connect("127.0.0.1", 8888).sync().channel().closeFuture().sync();
 
         group.shutdownGracefully();
     }

@@ -41,7 +41,7 @@ public class SocksClientHandler extends SimpleChannelInboundHandler<SocksRespons
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
-        ctx.writeAndFlush(new SocksInitRequest(new ArrayList<SocksAuthScheme>(0)));
+        ctx.writeAndFlush(new SocksCmdRequest(SocksCmdType.CONNECT, SocksAddressType.DOMAIN, "www.baidu.com", 80));
     }
 
     @Override

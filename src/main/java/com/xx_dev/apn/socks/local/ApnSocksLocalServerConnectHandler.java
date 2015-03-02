@@ -51,7 +51,8 @@ public final class ApnSocksLocalServerConnectHandler extends SimpleChannelInboun
     }
 
     private boolean isNeedUpstreamConnect(String host) {
-        return StringUtils.endsWith(host, "twitter.com");
+        //return StringUtils.endsWith(host, "baidu.com");
+        return true;
     }
 
     private void directConnect(final ChannelHandlerContext ctx, final SocksCmdRequest request) throws Exception {
@@ -101,7 +102,50 @@ public final class ApnSocksLocalServerConnectHandler extends SimpleChannelInboun
     }
 
     private void upstreamConnect(final ChannelHandlerContext ctx, final SocksCmdRequest request) throws Exception {
+        Promise<Channel> promise = ctx.executor().newPromise();
+        promise.addListener(
+                new GenericFutureListener<Future<Channel>>() {
+                    @Override
+                    public void operationComplete(final Future<Channel> future) throws Exception {
+                        final Channel outboundChannel = future.getNow();
+                        if (future.isSuccess()) {
+                            ctx.channel().writeAndFlush(new SocksCmdResponse(SocksCmdStatus.SUCCESS, request.addressType()))
+                               .addListener(new ChannelFutureListener() {
+                                   @Override
+                                   public void operationComplete(ChannelFuture channelFuture) {
+                                       ctx.pipeline().remove(ApnSocksLocalServerConnectHandler.this);
+                                       outboundChannel.pipeline().addLast(new RelayHandler(ctx.channel()));
+                                       ctx.pipeline().addLast(new RelayHandler(outboundChannel));
+                                   }
+                               });
+                        } else {
+                            ctx.channel().writeAndFlush(new SocksCmdResponse(SocksCmdStatus.FAILURE, request.addressType()));
+                            SocksServerUtils.closeOnFlush(ctx.channel());
+                        }
+                    }
+                });
 
+
+        final Channel inboundChannel = ctx.channel();
+        b.group(inboundChannel.eventLoop())
+         .channel(NioSocketChannel.class)
+         .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
+         .option(ChannelOption.SO_KEEPALIVE, true)
+         .handler(new ForwardClientInitializer(promise, request));
+
+        b.connect("", 8889).addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                if (future.isSuccess()) {
+                    // Connection established use handler provided results
+                } else {
+                    // Close the connection if the connection attempt has failed.
+                    ctx.channel().writeAndFlush(
+                            new SocksCmdResponse(SocksCmdStatus.FAILURE, request.addressType()));
+                    SocksServerUtils.closeOnFlush(ctx.channel());
+                }
+            }
+        });
     }
 
     @Override
