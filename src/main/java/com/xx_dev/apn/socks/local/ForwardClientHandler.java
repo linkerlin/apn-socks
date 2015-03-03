@@ -16,18 +16,12 @@
 
 package com.xx_dev.apn.socks.local;
 
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.socks.SocksAddressType;
 import io.netty.handler.codec.socks.SocksCmdRequest;
 import io.netty.handler.codec.socks.SocksCmdResponse;
-import io.netty.handler.codec.socks.SocksCmdResponseDecoder;
 import io.netty.handler.codec.socks.SocksCmdStatus;
-import io.netty.handler.codec.socks.SocksCmdType;
-import io.netty.util.CharsetUtil;
 import io.netty.util.concurrent.Promise;
 
 /**
@@ -50,12 +44,12 @@ public class ForwardClientHandler extends SimpleChannelInboundHandler<SocksCmdRe
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, SocksCmdResponse socksCmdResponse) throws Exception {
-            if (socksCmdResponse.cmdStatus() == SocksCmdStatus.SUCCESS) {
-                ctx.pipeline().remove(this);
-                promise.setSuccess(ctx.channel());
-            } else {
-                ctx.close();
-            }
+        if (socksCmdResponse.cmdStatus() == SocksCmdStatus.SUCCESS) {
+            ctx.pipeline().remove(this);
+            promise.setSuccess(ctx.channel());
+        } else {
+            ctx.close();
+        }
     }
 
     @Override

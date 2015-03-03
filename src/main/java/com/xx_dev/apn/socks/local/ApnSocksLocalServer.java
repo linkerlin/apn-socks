@@ -18,7 +18,7 @@ package com.xx_dev.apn.socks.local;
 
 import com.xx_dev.apn.socks.util.LoggerUtil;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.UnpooledByteBufAllocator;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -42,11 +42,11 @@ public final class ApnSocksLocalServer {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
              .channel(NioServerSocketChannel.class)
-             .childOption(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT)
+             .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
              .handler(new LoggingHandler("NET_LOGGER", LogLevel.DEBUG))
              .childHandler(new ApnSocksLocalServerInitializer());
             b.bind(PORT).sync().channel().closeFuture().sync();
-        } catch(Throwable t) {
+        } catch (Throwable t) {
             logger.error(t.getMessage(), t);
         } finally {
             bossGroup.shutdownGracefully();

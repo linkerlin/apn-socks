@@ -52,7 +52,7 @@ public class FrameDecoder extends ReplayingDecoder<FrameDecoder.STATE> {
         }
         case READ_LENGTH: {
             length = in.readInt();
-            if (length > 1024*512 + 1000) {
+            if (length > 1024 * 512 + 1000) {
                 ctx.close();
             }
             this.checkpoint(STATE.READ_CONTENT);

@@ -45,7 +45,7 @@ public final class ApnSocksRemoteServer {
              .handler(new LoggingHandler("NET_LOGGER", LogLevel.DEBUG))
              .childHandler(new ApnSocksRemoteServerInitializer());
             b.bind(PORT).sync().channel().closeFuture().sync();
-        } catch(Throwable t) {
+        } catch (Throwable t) {
             logger.error(t.getMessage(), t);
         } finally {
             bossGroup.shutdownGracefully();

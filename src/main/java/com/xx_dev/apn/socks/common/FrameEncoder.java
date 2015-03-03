@@ -32,10 +32,10 @@ public class FrameEncoder extends MessageToByteEncoder<ByteBuf> {
     protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) throws Exception {
         try {
 
-            while(msg.readableBytes() > 0) {
+            while (msg.readableBytes() > 0) {
                 int readLength = msg.readableBytes();
-                if (readLength > 1024*512) {
-                    readLength = 1024*512;
+                if (readLength > 1024 * 512) {
+                    readLength = 1024 * 512;
                 }
 
                 byte[] array = new byte[readLength];

@@ -34,7 +34,6 @@ import io.netty.handler.codec.socks.SocksCmdStatus;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.Promise;
-import org.apache.commons.lang.StringUtils;
 
 @ChannelHandler.Sharable
 public final class ApnSocksLocalServerConnectHandler extends SimpleChannelInboundHandler<SocksCmdRequest> {
@@ -63,7 +62,8 @@ public final class ApnSocksLocalServerConnectHandler extends SimpleChannelInboun
                     public void operationComplete(final Future<Channel> future) throws Exception {
                         final Channel outboundChannel = future.getNow();
                         if (future.isSuccess()) {
-                            ctx.channel().writeAndFlush(new SocksCmdResponse(SocksCmdStatus.SUCCESS, request.addressType()))
+                            ctx.channel()
+                               .writeAndFlush(new SocksCmdResponse(SocksCmdStatus.SUCCESS, request.addressType()))
                                .addListener(new ChannelFutureListener() {
                                    @Override
                                    public void operationComplete(ChannelFuture channelFuture) {
@@ -73,7 +73,8 @@ public final class ApnSocksLocalServerConnectHandler extends SimpleChannelInboun
                                    }
                                });
                         } else {
-                            ctx.channel().writeAndFlush(new SocksCmdResponse(SocksCmdStatus.FAILURE, request.addressType()));
+                            ctx.channel()
+                               .writeAndFlush(new SocksCmdResponse(SocksCmdStatus.FAILURE, request.addressType()));
                             SocksServerUtils.closeOnFlush(ctx.channel());
                         }
                     }
@@ -109,7 +110,8 @@ public final class ApnSocksLocalServerConnectHandler extends SimpleChannelInboun
                     public void operationComplete(final Future<Channel> future) throws Exception {
                         final Channel outboundChannel = future.getNow();
                         if (future.isSuccess()) {
-                            ctx.channel().writeAndFlush(new SocksCmdResponse(SocksCmdStatus.SUCCESS, request.addressType()))
+                            ctx.channel()
+                               .writeAndFlush(new SocksCmdResponse(SocksCmdStatus.SUCCESS, request.addressType()))
                                .addListener(new ChannelFutureListener() {
                                    @Override
                                    public void operationComplete(ChannelFuture channelFuture) {
@@ -119,7 +121,8 @@ public final class ApnSocksLocalServerConnectHandler extends SimpleChannelInboun
                                    }
                                });
                         } else {
-                            ctx.channel().writeAndFlush(new SocksCmdResponse(SocksCmdStatus.FAILURE, request.addressType()));
+                            ctx.channel()
+                               .writeAndFlush(new SocksCmdResponse(SocksCmdStatus.FAILURE, request.addressType()));
                             SocksServerUtils.closeOnFlush(ctx.channel());
                         }
                     }
@@ -133,7 +136,7 @@ public final class ApnSocksLocalServerConnectHandler extends SimpleChannelInboun
          .option(ChannelOption.SO_KEEPALIVE, true)
          .handler(new ForwardClientInitializer(promise, request));
 
-        b.connect("", 8889).addListener(new ChannelFutureListener() {
+        b.connect("apnsocks.test.server", 8889).addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
                 if (future.isSuccess()) {
