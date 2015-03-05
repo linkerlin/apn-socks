@@ -16,6 +16,7 @@
 
 package com.xx_dev.apn.socks.remote;
 
+import com.xx_dev.apn.socks.common.ForwardRequest;
 import com.xx_dev.apn.socks.util.SocksServerUtils;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -31,37 +32,13 @@ import io.netty.handler.codec.socks.SocksRequest;
 
 
 @ChannelHandler.Sharable
-public final class ApnSocksRemoteServerHandler extends SimpleChannelInboundHandler<SocksRequest> {
+public final class ApnSocksRemoteServerHandler extends SimpleChannelInboundHandler<ForwardRequest> {
 
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, SocksRequest socksRequest) throws Exception {
-        switch (socksRequest.requestType()) {
-        case INIT: {
-            // auth support example
-            //ctx.pipeline().addFirst(new SocksAuthRequestDecoder());
-            //ctx.write(new SocksInitResponse(SocksAuthScheme.AUTH_PASSWORD));
-            ctx.pipeline().addAfter("log", "cmdRequstDecoder", new SocksCmdRequestDecoder());
-            ctx.write(new SocksInitResponse(SocksAuthScheme.NO_AUTH));
-            break;
-        }
-        case AUTH:
-            ctx.pipeline().addAfter("log", "cmdRequstDecoder", new SocksCmdRequestDecoder());
-            ctx.write(new SocksAuthResponse(SocksAuthStatus.SUCCESS));
-            break;
-        case CMD:
-            SocksCmdRequest req = (SocksCmdRequest) socksRequest;
-            if (req.cmdType() == SocksCmdType.CONNECT) {
+    public void channelRead0(ChannelHandlerContext ctx, ForwardRequest forwardRequest) throws Exception {
                 ctx.pipeline().addLast(new ApnSocksRemoteServerConnectHandler());
                 ctx.pipeline().remove(this);
-                ctx.fireChannelRead(socksRequest);
-            } else {
-                ctx.close();
-            }
-            break;
-        case UNKNOWN:
-            ctx.close();
-            break;
-        }
+                ctx.fireChannelRead(forwardRequest);
     }
 
     @Override

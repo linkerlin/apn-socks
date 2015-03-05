@@ -17,6 +17,8 @@
 package com.xx_dev.apn.socks.remote;
 
 import com.xx_dev.apn.socks.common.DirectClientHandler;
+import com.xx_dev.apn.socks.common.ForwardRequest;
+import com.xx_dev.apn.socks.common.ForwardResponse;
 import com.xx_dev.apn.socks.common.RelayHandler;
 import com.xx_dev.apn.socks.util.SocksServerUtils;
 import io.netty.bootstrap.Bootstrap;
@@ -36,16 +38,16 @@ import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.Promise;
 
 @ChannelHandler.Sharable
-public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInboundHandler<SocksCmdRequest> {
+public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInboundHandler<ForwardRequest> {
 
     private final Bootstrap b = new Bootstrap();
 
     @Override
-    public void channelRead0(final ChannelHandlerContext ctx, final SocksCmdRequest request) throws Exception {
+    public void channelRead0(final ChannelHandlerContext ctx, final ForwardRequest request) throws Exception {
         directConnect(ctx, request);
     }
 
-    private void directConnect(final ChannelHandlerContext ctx, final SocksCmdRequest request) throws Exception {
+    private void directConnect(final ChannelHandlerContext ctx, final ForwardRequest request) throws Exception {
         Promise<Channel> promise = ctx.executor().newPromise();
         promise.addListener(
                 new GenericFutureListener<Future<Channel>>() {
@@ -54,7 +56,7 @@ public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInbou
                         final Channel outboundChannel = future.getNow();
                         if (future.isSuccess()) {
                             ctx.channel()
-                               .writeAndFlush(new SocksCmdResponse(SocksCmdStatus.SUCCESS, request.addressType()))
+                               .writeAndFlush(new ForwardResponse(request.streamId(), SocksCmdStatus.SUCCESS))
                                .addListener(new ChannelFutureListener() {
                                    @Override
                                    public void operationComplete(ChannelFuture channelFuture) {
@@ -65,7 +67,7 @@ public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInbou
                                });
                         } else {
                             ctx.channel()
-                               .writeAndFlush(new SocksCmdResponse(SocksCmdStatus.FAILURE, request.addressType()));
+                               .writeAndFlush(new ForwardResponse(request.streamId(), SocksCmdStatus.FAILURE));
                             SocksServerUtils.closeOnFlush(ctx.channel());
                         }
                     }
@@ -86,7 +88,7 @@ public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInbou
                 } else {
                     // Close the connection if the connection attempt has failed.
                     ctx.channel().writeAndFlush(
-                            new SocksCmdResponse(SocksCmdStatus.FAILURE, request.addressType()));
+                            new ForwardResponse(request.streamId(), SocksCmdStatus.FAILURE));
                     SocksServerUtils.closeOnFlush(ctx.channel());
                 }
             }

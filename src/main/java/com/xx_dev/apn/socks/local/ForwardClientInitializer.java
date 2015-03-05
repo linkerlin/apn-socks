@@ -16,15 +16,12 @@
 
 package com.xx_dev.apn.socks.local;
 
-import com.xx_dev.apn.socks.common.FrameDecoder;
-import com.xx_dev.apn.socks.common.FrameEncoder;
+import com.xx_dev.apn.socks.common.ForwardMsgEncoder;
+import com.xx_dev.apn.socks.common.ForwardRequest;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.socks.SocksCmdRequest;
-import io.netty.handler.codec.socks.SocksCmdResponseDecoder;
-import io.netty.handler.codec.socks.SocksMessageEncoder;
 import io.netty.util.concurrent.Promise;
 
 /**
@@ -34,23 +31,23 @@ import io.netty.util.concurrent.Promise;
 public class ForwardClientInitializer extends ChannelInitializer<SocketChannel> {
 
     private final Promise<Channel> promise;
-    private final SocksCmdRequest socksCmdRequest;
+    private final ForwardRequest forwardRequest;
 
-    public ForwardClientInitializer(Promise<Channel> promise, SocksCmdRequest socksCmdRequest) {
+    public ForwardClientInitializer(Promise<Channel> promise, ForwardRequest forwardRequest) {
         this.promise = promise;
-        this.socksCmdRequest = socksCmdRequest;
+        this.forwardRequest = forwardRequest;
     }
 
     @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
         ChannelPipeline p = socketChannel.pipeline();
 
-        p.addLast(new FrameDecoder());
-        p.addLast(new FrameEncoder());
+//        p.addLast(new FrameDecoder());
+//        p.addLast(new FrameEncoder());
 
-        p.addLast(new SocksCmdResponseDecoder());
-        p.addLast(new SocksMessageEncoder());
-        p.addLast(new ForwardClientHandler(promise, socksCmdRequest));
+        p.addLast(new ForwardResponseDecoder());
+        p.addLast(new ForwardMsgEncoder());
+        p.addLast(new ForwardClientHandler(promise, forwardRequest));
     }
 
 }

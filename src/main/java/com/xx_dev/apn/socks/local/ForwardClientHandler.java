@@ -16,11 +16,11 @@
 
 package com.xx_dev.apn.socks.local;
 
+import com.xx_dev.apn.socks.common.ForwardRequest;
+import com.xx_dev.apn.socks.common.ForwardResponse;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.socks.SocksCmdRequest;
-import io.netty.handler.codec.socks.SocksCmdResponse;
 import io.netty.handler.codec.socks.SocksCmdStatus;
 import io.netty.util.concurrent.Promise;
 
@@ -28,23 +28,23 @@ import io.netty.util.concurrent.Promise;
  * @author xmx
  * @version $Id: com.xx_dev.apn.socks.local.ForwardClientHandler 2015-03-02 19:47 (xmx) Exp $
  */
-public class ForwardClientHandler extends SimpleChannelInboundHandler<SocksCmdResponse> {
+public class ForwardClientHandler extends SimpleChannelInboundHandler<ForwardResponse> {
     private final Promise<Channel> promise;
-    private final SocksCmdRequest socksCmdRequest;
+    private final ForwardRequest forwardRequest;
 
-    public ForwardClientHandler(Promise<Channel> promise, SocksCmdRequest socksCmdRequest) {
+    public ForwardClientHandler(Promise<Channel> promise, ForwardRequest forwardRequest) {
         this.promise = promise;
-        this.socksCmdRequest = socksCmdRequest;
+        this.forwardRequest = forwardRequest;
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        ctx.writeAndFlush(socksCmdRequest);
+        ctx.writeAndFlush(forwardRequest);
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, SocksCmdResponse socksCmdResponse) throws Exception {
-        if (socksCmdResponse.cmdStatus() == SocksCmdStatus.SUCCESS) {
+    protected void channelRead0(ChannelHandlerContext ctx, ForwardResponse forwardResponse) throws Exception {
+        if (forwardResponse.cmdStatus() == SocksCmdStatus.SUCCESS) {
             ctx.pipeline().remove(this);
             promise.setSuccess(ctx.channel());
         } else {

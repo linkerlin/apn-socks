@@ -17,6 +17,7 @@
 package com.xx_dev.apn.socks.local;
 
 import com.xx_dev.apn.socks.common.DirectClientHandler;
+import com.xx_dev.apn.socks.common.ForwardRequest;
 import com.xx_dev.apn.socks.common.RelayHandler;
 import com.xx_dev.apn.socks.util.SocksServerUtils;
 import io.netty.bootstrap.Bootstrap;
@@ -134,7 +135,7 @@ public final class ApnSocksLocalServerConnectHandler extends SimpleChannelInboun
          .channel(NioSocketChannel.class)
          .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
          .option(ChannelOption.SO_KEEPALIVE, true)
-         .handler(new ForwardClientInitializer(promise, request));
+         .handler(new ForwardClientInitializer(promise, new ForwardRequest(0, request.addressType(), request.host(), request.port())));
 
         b.connect("apnsocks.test.server", 8889).addListener(new ChannelFutureListener() {
             @Override

@@ -16,31 +16,30 @@
 
 package com.xx_dev.apn.socks.remote;
 
+import com.xx_dev.apn.socks.common.ForwardMsgEncoder;
 import com.xx_dev.apn.socks.common.FrameDecoder;
 import com.xx_dev.apn.socks.common.FrameEncoder;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.socks.SocksCmdRequestDecoder;
-import io.netty.handler.codec.socks.SocksMessageEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
 public final class ApnSocksRemoteServerInitializer extends ChannelInitializer<SocketChannel> {
 
-    private final SocksMessageEncoder socksMessageEncoder = new SocksMessageEncoder();
+    private final ForwardMsgEncoder forwardMsgEncoder = new ForwardMsgEncoder();
     private final ApnSocksRemoteServerHandler socksServerHandler = new ApnSocksRemoteServerHandler();
 
     @Override
     public void initChannel(SocketChannel socketChannel) throws Exception {
         ChannelPipeline p = socketChannel.pipeline();
 
-        p.addLast(new FrameDecoder());
-        p.addLast(new FrameEncoder());
+//        p.addLast(new FrameDecoder());
+//        p.addLast(new FrameEncoder());
 
         p.addLast("log", new LoggingHandler("BYTE_LOGGER", LogLevel.DEBUG));
-        p.addLast(new SocksCmdRequestDecoder());
-        p.addLast(socksMessageEncoder);
+        p.addLast(new ForwardRequestDecoder());
+        p.addLast(forwardMsgEncoder);
         p.addLast(socksServerHandler);
     }
 }
