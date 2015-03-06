@@ -135,7 +135,7 @@ public final class ApnSocksLocalServerConnectHandler extends SimpleChannelInboun
          .channel(NioSocketChannel.class)
          .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
          .option(ChannelOption.SO_KEEPALIVE, true)
-         .handler(new ForwardClientInitializer(promise, new ForwardRequest(0, request.addressType(), request.host(), request.port())));
+         .handler(new ForwardClientInitializer(promise, new ForwardRequest(1, request.addressType(), request.host(), request.port())));
 
         b.connect("apnsocks.test.server", 8889).addListener(new ChannelFutureListener() {
             @Override

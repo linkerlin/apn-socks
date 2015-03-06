@@ -17,6 +17,7 @@
 package com.xx_dev.apn.socks.common;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import io.netty.handler.codec.socks.SocksMessage;
@@ -25,6 +26,7 @@ import io.netty.handler.codec.socks.SocksMessage;
  * @author xmx
  * @version $Id: com.xx_dev.apn.socks.common.ForwardMsgEncoder 2015-03-05 19:12 (xmx) Exp $
  */
+@Sharable
 public class ForwardMsgEncoder extends MessageToByteEncoder<ForwardMsg> {
     private static final String name = "FORWARD_MESSAGE_ENCODER";
 
