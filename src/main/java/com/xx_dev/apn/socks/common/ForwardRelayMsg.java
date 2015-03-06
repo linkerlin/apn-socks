@@ -44,11 +44,12 @@ public class ForwardRelayMsg extends ForwardMsg implements ReferenceCounted {
     @Override
     public void encodeAsByteBuf(ByteBuf byteBuf) {
         while (relayMsgByteBuf.readableBytes() > 0) {
-            byteBuf.writeShort(this.type());
+            byteBuf.writeByte(this.type());
             byteBuf.writeShort(this.streamId());
 
             int length = relayMsgByteBuf.readableBytes() > 1024?1024:relayMsgByteBuf.readableBytes();
 
+            byteBuf.writeShort(length);
             byteBuf.writeBytes(relayMsgByteBuf, length);
         }
     }

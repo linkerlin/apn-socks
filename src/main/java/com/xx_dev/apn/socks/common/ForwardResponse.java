@@ -67,7 +67,7 @@ public class ForwardResponse extends  ForwardMsg{
     }
 
     public void encodeAsByteBuf(ByteBuf byteBuf) {
-        byteBuf.writeShort(this.type());
+        byteBuf.writeByte(this.type());
         byteBuf.writeShort(this.streamId());
         byteBuf.writeByte(cmdStatus.byteValue());
     }

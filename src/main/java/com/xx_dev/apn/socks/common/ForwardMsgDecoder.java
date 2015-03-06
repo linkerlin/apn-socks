@@ -67,7 +67,7 @@ public class ForwardMsgDecoder extends ReplayingDecoder<ForwardMsgDecoder.STATE>
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> out) throws Exception {
         switch (state()) {
         case READ_MSG_TYPE: {
-            type = byteBuf.readShort();
+            type = byteBuf.readByte();
             checkpoint(STATE.READ_STREAM_ID);
         }
         default:break;
@@ -81,7 +81,7 @@ public class ForwardMsgDecoder extends ReplayingDecoder<ForwardMsgDecoder.STATE>
                 checkpoint(STATE.READ_RELAY_DATA);
             }
             case READ_RELAY_DATA: {
-                int relayLength = byteBuf.readByte();
+                int relayLength = byteBuf.readShort();
                 ByteBuf readBytes = byteBuf.readBytes(relayLength);
                 msg = new ForwardRelayMsg(streamId, readBytes);
             }
