@@ -59,7 +59,7 @@ public class ForwardClientManager {
 
     public void forwardRequest(final ChannelHandlerContext inboundCtx, final SocksCmdRequest request) {
         final int currentStreamId = streamId ++;
-        if (forwardChanne==null) {
+        if (forwardChanne==null || !forwardChanne.isActive()) {
             Bootstrap b = new Bootstrap();
             b.group(inboundCtx.channel().eventLoop())
              .channel(NioSocketChannel.class)
