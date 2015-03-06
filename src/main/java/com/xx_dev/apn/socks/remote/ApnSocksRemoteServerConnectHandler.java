@@ -36,11 +36,14 @@ import io.netty.handler.codec.socks.SocksCmdStatus;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.Promise;
+import org.apache.log4j.Logger;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInboundHandler<ForwardMsg> {
+    private static final Logger logger = Logger.getLogger(ApnSocksRemoteServerConnectHandler.class);
+
 
     private Map<Integer, Channel> map = new ConcurrentHashMap<Integer, Channel>();
 
@@ -54,6 +57,7 @@ public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInbou
     }
 
     private void relay(ChannelHandlerContext ctx, ForwardRelayMsg forwardMsg) {
+        logger.warn("relay: " + forwardMsg.streamId());
         map.get(forwardMsg.streamId()).writeAndFlush(forwardMsg);
     }
 
