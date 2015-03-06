@@ -135,6 +135,10 @@ public class ForwardMsgDecoder extends ReplayingDecoder<ForwardMsgDecoder.STATE>
         }
         case 2: {
             switch (state()) {
+            case READ_STREAM_ID: {
+                streamId = byteBuf.readShort();
+                checkpoint(STATE.READ_CMD_STATUS);
+            }
             case READ_CMD_STATUS: {
                 cmdStatus = SocksCmdStatus.valueOf(byteBuf.readByte());
                 msg = new ForwardResponse(streamId, cmdStatus);

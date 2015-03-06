@@ -37,6 +37,7 @@ public class RelayForwardHandler extends SimpleChannelInboundHandler<ForwardRela
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ForwardRelayMsg msg) throws Exception {
+        msg.retain();
         outboundChannel.writeAndFlush(msg.relayMsgByteBuf());
     }
 }
