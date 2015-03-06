@@ -31,8 +31,6 @@ import java.net.IDN;
  */
 public class ForwardResponse extends  ForwardMsg{
 
-    private final int streamId;
-
     private final SocksCmdStatus cmdStatus;
 
 
@@ -46,6 +44,7 @@ public class ForwardResponse extends  ForwardMsg{
      * @see java.net.IDN#toASCII(String)
      */
     public ForwardResponse(int streamId, SocksCmdStatus cmdStatus) {
+        super(2, streamId);
         if (streamId <=0 || streamId >= 65536) {
             throw new IllegalArgumentException(streamId + " is not in bounds 0 < x < 65536");
         }
@@ -54,18 +53,9 @@ public class ForwardResponse extends  ForwardMsg{
             throw new NullPointerException("cmdStatus");
         }
 
-        this.streamId = streamId;
         this.cmdStatus = cmdStatus;
     }
 
-    /**
-     * Returns the streamId of this {@link ForwardRequest}
-     *
-     * @return The streamId of this {@link ForwardRequest}
-     */
-    public int streamId() {
-        return streamId;
-    }
 
     /**
      * Returns the {@link SocksCmdStatus} of this {@link ForwardResponse}
@@ -77,7 +67,8 @@ public class ForwardResponse extends  ForwardMsg{
     }
 
     public void encodeAsByteBuf(ByteBuf byteBuf) {
-        byteBuf.writeShort(streamId);
+        byteBuf.writeShort(this.type());
+        byteBuf.writeShort(this.streamId());
         byteBuf.writeByte(cmdStatus.byteValue());
     }
 }

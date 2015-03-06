@@ -31,12 +31,13 @@ import java.net.IDN;
  */
 public class ForwardRequest extends ForwardMsg{
 
-    private final int streamId;
+
     private final SocksAddressType addressType;
     private final String host;
     private final int port;
 
     public ForwardRequest(int streamId, SocksAddressType addressType, String host, int port) {
+        super(1, streamId);
         if (addressType == null) {
             throw new NullPointerException("addressType");
         }
@@ -70,19 +71,9 @@ public class ForwardRequest extends ForwardMsg{
         if (port <= 0 || port >= 65536) {
             throw new IllegalArgumentException(port + " is not in bounds 0 < x < 65536");
         }
-        this.streamId = streamId;
         this.addressType = addressType;
         this.host = IDN.toASCII(host);
         this.port = port;
-    }
-
-    /**
-     * Returns the streamId of this {@link ForwardRequest}
-     *
-     * @return The streamId of this {@link ForwardRequest}
-     */
-    public int streamId() {
-        return streamId;
     }
 
     /**
@@ -113,7 +104,8 @@ public class ForwardRequest extends ForwardMsg{
     }
 
     public void encodeAsByteBuf(ByteBuf byteBuf) {
-        byteBuf.writeShort(streamId);
+        byteBuf.writeShort(this.type());
+        byteBuf.writeShort(this.streamId());
         byteBuf.writeByte(addressType.byteValue());
         switch (addressType) {
         case IPv4: {

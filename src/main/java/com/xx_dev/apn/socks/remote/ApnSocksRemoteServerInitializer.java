@@ -16,6 +16,7 @@
 
 package com.xx_dev.apn.socks.remote;
 
+import com.xx_dev.apn.socks.common.ForwardMsgDecoder;
 import com.xx_dev.apn.socks.common.ForwardMsgEncoder;
 import com.xx_dev.apn.socks.common.FrameDecoder;
 import com.xx_dev.apn.socks.common.FrameEncoder;
@@ -38,7 +39,7 @@ public final class ApnSocksRemoteServerInitializer extends ChannelInitializer<So
 //        p.addLast(new FrameEncoder());
 
         p.addLast("log", new LoggingHandler("BYTE_LOGGER", LogLevel.DEBUG));
-        p.addLast(new ForwardRequestDecoder());
+        p.addLast(new ForwardMsgDecoder());
         p.addLast(forwardMsgEncoder);
         p.addLast(socksServerHandler);
     }

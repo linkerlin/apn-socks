@@ -19,7 +19,7 @@ package com.xx_dev.apn.socks.remote;
 import com.xx_dev.apn.socks.common.DirectClientHandler;
 import com.xx_dev.apn.socks.common.ForwardRequest;
 import com.xx_dev.apn.socks.common.ForwardResponse;
-import com.xx_dev.apn.socks.common.RelayHandler;
+import com.xx_dev.apn.socks.common.ForwardRelayHandler;
 import com.xx_dev.apn.socks.util.SocksServerUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -30,8 +30,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.socks.SocksCmdRequest;
-import io.netty.handler.codec.socks.SocksCmdResponse;
 import io.netty.handler.codec.socks.SocksCmdStatus;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -61,8 +59,8 @@ public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInbou
                                    @Override
                                    public void operationComplete(ChannelFuture channelFuture) {
                                        ctx.pipeline().remove(ApnSocksRemoteServerConnectHandler.this);
-                                       outboundChannel.pipeline().addLast(new RelayHandler(ctx.channel()));
-                                       ctx.pipeline().addLast(new RelayHandler(outboundChannel));
+                                       outboundChannel.pipeline().addLast(new ForwardRelayHandler(request.streamId(), ctx.channel()));
+                                       ctx.pipeline().addLast(new RelayForwardHandler(outboundChannel));
                                    }
                                });
                         } else {

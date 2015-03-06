@@ -16,6 +16,7 @@
 
 package com.xx_dev.apn.socks.local;
 
+import com.xx_dev.apn.socks.common.ForwardMsgDecoder;
 import com.xx_dev.apn.socks.common.ForwardMsgEncoder;
 import com.xx_dev.apn.socks.common.ForwardRequest;
 import io.netty.channel.Channel;
@@ -30,12 +31,7 @@ import io.netty.util.concurrent.Promise;
  */
 public class ForwardClientInitializer extends ChannelInitializer<SocketChannel> {
 
-    private final Promise<Channel> promise;
-    private final ForwardRequest forwardRequest;
-
-    public ForwardClientInitializer(Promise<Channel> promise, ForwardRequest forwardRequest) {
-        this.promise = promise;
-        this.forwardRequest = forwardRequest;
+    public ForwardClientInitializer() {
     }
 
     @Override
@@ -45,9 +41,9 @@ public class ForwardClientInitializer extends ChannelInitializer<SocketChannel> 
 //        p.addLast(new FrameDecoder());
 //        p.addLast(new FrameEncoder());
 
-        p.addLast(new ForwardResponseDecoder());
+        p.addLast(new ForwardMsgDecoder());
         p.addLast(new ForwardMsgEncoder());
-        p.addLast(new ForwardClientHandler(promise, forwardRequest));
+        p.addLast(new ForwardClientHandler());
     }
 
 }

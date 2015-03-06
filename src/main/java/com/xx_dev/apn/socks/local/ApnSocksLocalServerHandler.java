@@ -51,7 +51,7 @@ public final class ApnSocksLocalServerHandler extends SimpleChannelInboundHandle
         case CMD:
             SocksCmdRequest req = (SocksCmdRequest) socksRequest;
             if (req.cmdType() == SocksCmdType.CONNECT) {
-                ctx.pipeline().addLast(new ApnSocksLocalServerConnectHandler());
+                ctx.pipeline().addLast(ApnSocksLocalServerConnectHandler.NAME, new ApnSocksLocalServerConnectHandler());
                 ctx.pipeline().remove(this);
                 ctx.fireChannelRead(socksRequest);
             } else {

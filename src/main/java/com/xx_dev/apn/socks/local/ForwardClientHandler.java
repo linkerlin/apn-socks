@@ -16,6 +16,8 @@
 
 package com.xx_dev.apn.socks.local;
 
+import com.xx_dev.apn.socks.common.ForwardMsg;
+import com.xx_dev.apn.socks.common.ForwardRelayMsg;
 import com.xx_dev.apn.socks.common.ForwardRequest;
 import com.xx_dev.apn.socks.common.ForwardResponse;
 import io.netty.channel.Channel;
@@ -28,25 +30,21 @@ import io.netty.util.concurrent.Promise;
  * @author xmx
  * @version $Id: com.xx_dev.apn.socks.local.ForwardClientHandler 2015-03-02 19:47 (xmx) Exp $
  */
-public class ForwardClientHandler extends SimpleChannelInboundHandler<ForwardResponse> {
-    private final Promise<Channel> promise;
-    private final ForwardRequest forwardRequest;
+public class ForwardClientHandler extends SimpleChannelInboundHandler<ForwardMsg> {
 
-    public ForwardClientHandler(Promise<Channel> promise, ForwardRequest forwardRequest) {
-        this.promise = promise;
-        this.forwardRequest = forwardRequest;
+    public ForwardClientHandler() {
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        ctx.writeAndFlush(forwardRequest);
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, ForwardResponse forwardResponse) throws Exception {
-        if (forwardResponse.cmdStatus() == SocksCmdStatus.SUCCESS) {
-            ctx.pipeline().remove(this);
-            promise.setSuccess(ctx.channel());
+    protected void channelRead0(ChannelHandlerContext ctx, ForwardMsg forwardMsg) throws Exception {
+        if (forwardMsg.type() == 0 ) {
+            ForwardClientManager.ins().relay(forwardMsg.streamId(), ((ForwardRelayMsg)forwardMsg).relayMsgByteBuf());
+        } else if (forwardMsg.type() == 2 && ((ForwardResponse)forwardMsg).cmdStatus() == SocksCmdStatus.SUCCESS) {
+            ForwardClientManager.ins().responseForwardConnectSuccess(forwardMsg.streamId(), ctx.channel());
         } else {
             ctx.close();
         }
@@ -54,6 +52,6 @@ public class ForwardClientHandler extends SimpleChannelInboundHandler<ForwardRes
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable throwable) {
-        promise.setFailure(throwable);
+        //promise.setFailure(throwable);
     }
 }
