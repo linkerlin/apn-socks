@@ -58,7 +58,8 @@ public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInbou
 
     private void relay(ChannelHandlerContext ctx, ForwardRelayMsg forwardMsg) {
         logger.warn("relay: " + forwardMsg.streamId());
-        map.get(forwardMsg.streamId()).writeAndFlush(forwardMsg);
+        forwardMsg.retain();
+        map.get(forwardMsg.streamId()).writeAndFlush(forwardMsg.relayMsgByteBuf());
     }
 
     private void directConnect(final ChannelHandlerContext ctx, final ForwardRequest request) throws Exception {
