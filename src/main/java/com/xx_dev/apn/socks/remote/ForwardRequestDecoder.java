@@ -54,6 +54,7 @@ public class ForwardRequestDecoder extends ReplayingDecoder<ForwardRequestDecode
 
     enum STATE {
         READ_STREAM_ID,
+        READ_CMD_ADDRESS_TYPE,
         READ_CMD_ADDRESS
     }
 
@@ -66,6 +67,10 @@ public class ForwardRequestDecoder extends ReplayingDecoder<ForwardRequestDecode
         switch (state()) {
         case READ_STREAM_ID: {
             streamId = byteBuf.readShort();
+            checkpoint(STATE.READ_CMD_ADDRESS_TYPE);
+        }
+        case READ_CMD_ADDRESS_TYPE: {
+            addressType = SocksAddressType.valueOf(byteBuf.readByte());
             checkpoint(STATE.READ_CMD_ADDRESS);
         }
         case READ_CMD_ADDRESS: {
