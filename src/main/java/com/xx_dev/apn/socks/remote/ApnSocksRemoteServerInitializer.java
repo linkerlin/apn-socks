@@ -29,7 +29,6 @@ import io.netty.handler.logging.LoggingHandler;
 public final class ApnSocksRemoteServerInitializer extends ChannelInitializer<SocketChannel> {
 
     private final ForwardMsgEncoder forwardMsgEncoder = new ForwardMsgEncoder();
-    private final ApnSocksRemoteServerHandler socksServerHandler = new ApnSocksRemoteServerHandler();
 
     @Override
     public void initChannel(SocketChannel socketChannel) throws Exception {
@@ -41,6 +40,6 @@ public final class ApnSocksRemoteServerInitializer extends ChannelInitializer<So
         p.addLast("log", new LoggingHandler("BYTE_LOGGER", LogLevel.DEBUG));
         p.addLast(new ForwardMsgDecoder());
         p.addLast(forwardMsgEncoder);
-        p.addLast(socksServerHandler);
+        p.addLast(new ApnSocksRemoteServerConnectHandler());
     }
 }

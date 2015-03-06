@@ -17,6 +17,8 @@
 package com.xx_dev.apn.socks.remote;
 
 import com.xx_dev.apn.socks.common.DirectClientHandler;
+import com.xx_dev.apn.socks.common.ForwardMsg;
+import com.xx_dev.apn.socks.common.ForwardRelayMsg;
 import com.xx_dev.apn.socks.common.ForwardRequest;
 import com.xx_dev.apn.socks.common.ForwardResponse;
 import com.xx_dev.apn.socks.common.ForwardRelayHandler;
@@ -35,14 +37,24 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.Promise;
 
-@ChannelHandler.Sharable
-public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInboundHandler<ForwardRequest> {
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-    private final Bootstrap b = new Bootstrap();
+public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInboundHandler<ForwardMsg> {
+
+    private Map<Integer, Channel> map = new ConcurrentHashMap<Integer, Channel>();
 
     @Override
-    public void channelRead0(final ChannelHandlerContext ctx, final ForwardRequest request) throws Exception {
-        directConnect(ctx, request);
+    public void channelRead0(final ChannelHandlerContext ctx, final ForwardMsg forwardMsg) throws Exception {
+        if (forwardMsg.type() == 1) {
+            directConnect(ctx, (ForwardRequest)forwardMsg);
+        } else if (forwardMsg.type() == 0) {
+            relay(ctx, (ForwardRelayMsg)forwardMsg);
+        }
+    }
+
+    private void relay(ChannelHandlerContext ctx, ForwardRelayMsg forwardMsg) {
+        map.get(forwardMsg.streamId()).writeAndFlush(forwardMsg);
     }
 
     private void directConnect(final ChannelHandlerContext ctx, final ForwardRequest request) throws Exception {
@@ -53,14 +65,13 @@ public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInbou
                     public void operationComplete(final Future<Channel> future) throws Exception {
                         final Channel outboundChannel = future.getNow();
                         if (future.isSuccess()) {
+                            map.put(request.streamId(), outboundChannel);
                             ctx.channel()
                                .writeAndFlush(new ForwardResponse(request.streamId(), SocksCmdStatus.SUCCESS))
                                .addListener(new ChannelFutureListener() {
                                    @Override
                                    public void operationComplete(ChannelFuture channelFuture) {
-                                       ctx.pipeline().remove(ApnSocksRemoteServerConnectHandler.this);
                                        outboundChannel.pipeline().addLast(new ForwardRelayHandler(request.streamId(), ctx.channel()));
-                                       ctx.pipeline().addLast(new RelayForwardHandler(outboundChannel));
                                    }
                                });
                         } else {
@@ -72,6 +83,7 @@ public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInbou
                 });
 
         final Channel inboundChannel = ctx.channel();
+        Bootstrap b = new Bootstrap();
         b.group(inboundChannel.eventLoop())
          .channel(NioSocketChannel.class)
          .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
