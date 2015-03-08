@@ -45,6 +45,8 @@ public class ForwardClientHandler extends SimpleChannelInboundHandler<ForwardMsg
             ForwardClientManager.ins().relay(forwardMsg.streamId(), ((ForwardRelayMsg)forwardMsg).relayMsgByteBuf());
         } else if (forwardMsg.type() == 2 && ((ForwardResponse)forwardMsg).cmdStatus() == SocksCmdStatus.SUCCESS) {
             ForwardClientManager.ins().responseForwardConnectSuccess(forwardMsg.streamId(), ctx.channel());
+        } else if (forwardMsg.type() == 3) {
+            ForwardClientManager.ins().closeInboundChannel(forwardMsg.streamId());
         } else {
             ctx.close();
         }

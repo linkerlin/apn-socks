@@ -53,6 +53,8 @@ public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInbou
             directConnect(ctx, (ForwardRequest)forwardMsg);
         } else if (forwardMsg.type() == 0) {
             relay(ctx, (ForwardRelayMsg)forwardMsg);
+        } else if (forwardMsg.type() == 3) {
+            SocksServerUtils.closeOnFlush(map.get(forwardMsg.streamId()));
         }
     }
 

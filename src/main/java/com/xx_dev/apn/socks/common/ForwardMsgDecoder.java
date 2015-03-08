@@ -149,6 +149,18 @@ public class ForwardMsgDecoder extends ReplayingDecoder<ForwardMsgDecoder.STATE>
             }
             }
         }
+        case 3: {
+            switch (state()) {
+            case READ_STREAM_ID: {
+                streamId = byteBuf.readShort();
+                msg = new ForwardFinMsg(streamId);
+            }
+            default: {
+                checkpoint(STATE.READ_MSG_TYPE);
+                break;
+            }
+            }
+        }
         }
         out.add(msg);
     }

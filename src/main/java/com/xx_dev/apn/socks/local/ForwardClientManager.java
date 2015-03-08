@@ -94,7 +94,7 @@ public class ForwardClientManager {
 
     public void responseForwardConnectSuccess(final int streamId, final Channel outboundChannel) {
         map.get(streamId).channel()
-                            .writeAndFlush(new SocksCmdResponse(SocksCmdStatus.SUCCESS, SocksAddressType.DOMAIN))
+                            .writeAndFlush(new SocksCmdResponse(SocksCmdStatus.SUCCESS, SocksAddressType.IPv4))
                             .addListener(new ChannelFutureListener() {
                                 @Override
                                 public void operationComplete(ChannelFuture channelFuture) {
@@ -109,4 +109,7 @@ public class ForwardClientManager {
         map.get(streamId).channel().writeAndFlush(byteBuf);
     }
 
+    public void closeInboundChannel(int streamId) {
+        SocksServerUtils.closeOnFlush(map.get(streamId).channel());
+    }
 }

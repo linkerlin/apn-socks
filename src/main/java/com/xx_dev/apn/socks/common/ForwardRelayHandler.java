@@ -53,7 +53,7 @@ public final class ForwardRelayHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         if (forwardChannel.isActive()) {
-            SocksServerUtils.closeOnFlush(forwardChannel);
+            forwardChannel.writeAndFlush(new ForwardFinMsg(streamId));
         }
     }
 
