@@ -90,7 +90,7 @@ public class ForwardMsgDecoder extends ReplayingDecoder<ForwardMsgDecoder.STATE>
                 break;
             }
             }
-
+            break;
         }
         case 1: {
             switch (state()) {
@@ -132,6 +132,7 @@ public class ForwardMsgDecoder extends ReplayingDecoder<ForwardMsgDecoder.STATE>
                 break;
             }
             }
+            break;
         }
         case 2: {
             switch (state()) {
@@ -148,6 +149,7 @@ public class ForwardMsgDecoder extends ReplayingDecoder<ForwardMsgDecoder.STATE>
                 break;
             }
             }
+            break;
         }
         case 3: {
             switch (state()) {
@@ -160,6 +162,7 @@ public class ForwardMsgDecoder extends ReplayingDecoder<ForwardMsgDecoder.STATE>
                 break;
             }
             }
+            break;
         }
         }
         out.add(msg);
