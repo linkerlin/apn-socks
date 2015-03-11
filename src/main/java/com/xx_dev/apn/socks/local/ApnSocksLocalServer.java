@@ -37,7 +37,7 @@ public final class ApnSocksLocalServer {
     private EventLoopGroup workerGroup = new NioEventLoopGroup();
 
     public void start() {
-        LoggerUtil.info(logger, "ApnSocks Local Server Starting on 8866");
+        LoggerUtil.info(logger, "ApnSocks Local Server Starting on 8888");
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)

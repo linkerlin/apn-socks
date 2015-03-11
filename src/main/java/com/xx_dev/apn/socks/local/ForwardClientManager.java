@@ -16,11 +16,14 @@
 
 package com.xx_dev.apn.socks.local;
 
+import com.xx_dev.apn.socks.common.ForwardFinMsg;
 import com.xx_dev.apn.socks.common.ForwardRelayHandler;
 import com.xx_dev.apn.socks.common.ForwardRequest;
+import com.xx_dev.apn.socks.util.LoggerUtil;
 import com.xx_dev.apn.socks.util.SocksServerUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -32,9 +35,13 @@ import io.netty.handler.codec.socks.SocksAddressType;
 import io.netty.handler.codec.socks.SocksCmdRequest;
 import io.netty.handler.codec.socks.SocksCmdResponse;
 import io.netty.handler.codec.socks.SocksCmdStatus;
+import org.apache.log4j.Logger;
 
+import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -42,11 +49,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version $Id: com.xx_dev.apn.socks.local.ForwardClientManager 2015-03-06 20:33 (xmx) Exp $
  */
 public class ForwardClientManager {
+    private static final Logger logger = Logger.getLogger(ForwardClientManager.class);
 
     private static final ForwardClientManager ins = new ForwardClientManager();
 
     private Channel forwardChanne;
-    private int streamId = 1;
+    private AtomicInteger streamId = new AtomicInteger(1);
     private Map<Integer, ChannelHandlerContext> map = new ConcurrentHashMap<Integer, ChannelHandlerContext>();
 
     private ForwardClientManager() {
@@ -58,7 +66,7 @@ public class ForwardClientManager {
     }
 
     public void forwardRequest(final ChannelHandlerContext inboundCtx, final SocksCmdRequest request) {
-        final int currentStreamId = streamId ++;
+        final int currentStreamId = streamId.getAndAdd(1);
         if (forwardChanne==null || !forwardChanne.isActive()) {
             Bootstrap b = new Bootstrap();
             b.group(inboundCtx.channel().eventLoop())
@@ -93,23 +101,44 @@ public class ForwardClientManager {
     }
 
     public void responseForwardConnectSuccess(final int streamId, final Channel outboundChannel) {
+        LoggerUtil.info(logger, "FCS: " + streamId);
         map.get(streamId).channel()
                             .writeAndFlush(new SocksCmdResponse(SocksCmdStatus.SUCCESS, SocksAddressType.IPv4))
                             .addListener(new ChannelFutureListener() {
                                 @Override
                                 public void operationComplete(ChannelFuture channelFuture) {
-                                    map.get(streamId).pipeline().remove(ApnSocksLocalServerConnectHandler.NAME);
-                                    map.get(streamId).pipeline().addLast(new ForwardRelayHandler(streamId, outboundChannel));
+                                    if (channelFuture.isSuccess()) {
+                                        try {
+                                            map.get(streamId).pipeline().remove(ApnSocksLocalServerConnectHandler.NAME);
+                                        } catch (NoSuchElementException e) {
+                                            LoggerUtil.error(logger, e.getMessage()+", " + streamId + ", " + map.get(streamId).isRemoved() + ", " + map.get(streamId).channel().isActive());
+                                        }
+
+                                        map.get(streamId).pipeline().addLast(new ForwardRelayHandler(streamId, outboundChannel));
+                                    } else {
+                                        outboundChannel.writeAndFlush(new ForwardFinMsg(streamId));
+                                    }
                                 }
                             });
 
     }
 
+    public void responseForwardConnectFail(final int streamId, final Channel outboundChannel) {
+        LoggerUtil.info(logger, "FCF: " + streamId);
+        map.get(streamId).channel()
+           .writeAndFlush(new SocksCmdResponse(SocksCmdStatus.FAILURE, SocksAddressType.IPv4));
+        SocksServerUtils.closeOnFlush(map.get(streamId).channel());
+    }
+
     public void relay(final int streamId, final ByteBuf byteBuf) {
-        map.get(streamId).channel().writeAndFlush(byteBuf);
+        ByteBuf _byteBuf = Unpooled.copiedBuffer(byteBuf);
+        ChannelHandlerContext ctx = map.get(streamId);
+        ctx.channel().writeAndFlush(_byteBuf);
+        byteBuf.release();
     }
 
     public void closeInboundChannel(int streamId) {
         SocksServerUtils.closeOnFlush(map.get(streamId).channel());
+        map.remove(streamId);
     }
 }

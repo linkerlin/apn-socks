@@ -54,7 +54,11 @@ public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInbou
         } else if (forwardMsg.type() == 0) {
             relay(ctx, (ForwardRelayMsg)forwardMsg);
         } else if (forwardMsg.type() == 3) {
-            SocksServerUtils.closeOnFlush(map.get(forwardMsg.streamId()));
+            Channel targetChannel = map.get(forwardMsg.streamId());
+            if (targetChannel != null) {
+                SocksServerUtils.closeOnFlush(targetChannel);
+                map.remove(forwardMsg.streamId());
+            }
         }
     }
 
@@ -84,7 +88,7 @@ public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInbou
                         } else {
                             ctx.channel()
                                .writeAndFlush(new ForwardResponse(request.streamId(), SocksCmdStatus.FAILURE));
-                            SocksServerUtils.closeOnFlush(ctx.channel());
+                            //SocksServerUtils.closeOnFlush(ctx.channel());
                         }
                     }
                 });
