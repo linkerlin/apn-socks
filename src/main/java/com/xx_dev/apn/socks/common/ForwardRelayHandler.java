@@ -16,8 +16,6 @@
 
 package com.xx_dev.apn.socks.common;
 
-import com.xx_dev.apn.socks.common.ForwardRelayMsg;
-import com.xx_dev.apn.socks.util.SocksServerUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -43,7 +41,7 @@ public final class ForwardRelayHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         if (forwardChannel.isActive() && msg instanceof ByteBuf) {
-            ForwardRelayMsg _msg = new ForwardRelayMsg(streamId, (ByteBuf)msg);
+            ForwardRelayMsg _msg = new ForwardRelayMsg(streamId, (ByteBuf) msg);
             forwardChannel.writeAndFlush(_msg);
         } else {
             ReferenceCountUtil.release(msg);

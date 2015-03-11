@@ -19,7 +19,6 @@ package com.xx_dev.apn.socks.common;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.socks.SocksAddressType;
 import io.netty.handler.codec.socks.SocksCmdType;
-import io.netty.handler.codec.socks.SocksRequestType;
 import io.netty.util.CharsetUtil;
 import io.netty.util.NetUtil;
 
@@ -29,7 +28,7 @@ import java.net.IDN;
  * @author xmx
  * @version $Id: com.xx_dev.apn.socks.common.ForwardRequest 2015-03-05 15:32 (xmx) Exp $
  */
-public class ForwardRequest extends ForwardMsg{
+public class ForwardRequest extends ForwardMsg {
 
 
     private final SocksAddressType addressType;
@@ -64,7 +63,7 @@ public class ForwardRequest extends ForwardMsg{
             break;
         }
 
-        if (streamId <=0 || streamId >= 65536) {
+        if (streamId <= 0 || streamId >= 65536) {
             throw new IllegalArgumentException(streamId + " is not in bounds 0 < x < 65536");
         }
 

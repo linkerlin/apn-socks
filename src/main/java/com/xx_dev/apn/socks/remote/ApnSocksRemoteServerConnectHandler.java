@@ -18,16 +18,15 @@ package com.xx_dev.apn.socks.remote;
 
 import com.xx_dev.apn.socks.common.DirectClientHandler;
 import com.xx_dev.apn.socks.common.ForwardMsg;
+import com.xx_dev.apn.socks.common.ForwardRelayHandler;
 import com.xx_dev.apn.socks.common.ForwardRelayMsg;
 import com.xx_dev.apn.socks.common.ForwardRequest;
 import com.xx_dev.apn.socks.common.ForwardResponse;
-import com.xx_dev.apn.socks.common.ForwardRelayHandler;
 import com.xx_dev.apn.socks.util.SocksServerUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -50,9 +49,9 @@ public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInbou
     @Override
     public void channelRead0(final ChannelHandlerContext ctx, final ForwardMsg forwardMsg) throws Exception {
         if (forwardMsg.type() == 1) {
-            directConnect(ctx, (ForwardRequest)forwardMsg);
+            directConnect(ctx, (ForwardRequest) forwardMsg);
         } else if (forwardMsg.type() == 0) {
-            relay(ctx, (ForwardRelayMsg)forwardMsg);
+            relay(ctx, (ForwardRelayMsg) forwardMsg);
         } else if (forwardMsg.type() == 3) {
             Channel targetChannel = map.get(forwardMsg.streamId());
             if (targetChannel != null) {
@@ -82,7 +81,8 @@ public final class ApnSocksRemoteServerConnectHandler extends SimpleChannelInbou
                                .addListener(new ChannelFutureListener() {
                                    @Override
                                    public void operationComplete(ChannelFuture channelFuture) {
-                                       outboundChannel.pipeline().addLast(new ForwardRelayHandler(request.streamId(), ctx.channel()));
+                                       outboundChannel.pipeline().addLast(
+                                               new ForwardRelayHandler(request.streamId(), ctx.channel()));
                                    }
                                });
                         } else {

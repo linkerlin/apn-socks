@@ -26,7 +26,7 @@ import io.netty.util.ReferenceCounted;
 public class ForwardRelayMsg extends ForwardMsg implements ReferenceCounted {
     private ByteBuf relayMsgByteBuf;
 
-    public ForwardRelayMsg (int streamId, ByteBuf relayMsgByteBuf) {
+    public ForwardRelayMsg(int streamId, ByteBuf relayMsgByteBuf) {
         super(0, streamId);
         this.relayMsgByteBuf = relayMsgByteBuf;
     }
@@ -47,7 +47,7 @@ public class ForwardRelayMsg extends ForwardMsg implements ReferenceCounted {
             byteBuf.writeByte(this.type());
             byteBuf.writeShort(this.streamId());
 
-            int length = relayMsgByteBuf.readableBytes() > 1024?1024:relayMsgByteBuf.readableBytes();
+            int length = relayMsgByteBuf.readableBytes() > 1024? 1024 : relayMsgByteBuf.readableBytes();
 
             byteBuf.writeShort(length);
             byteBuf.writeBytes(relayMsgByteBuf, length);

@@ -18,8 +18,6 @@ package com.xx_dev.apn.socks.remote;
 
 import com.xx_dev.apn.socks.common.ForwardMsgDecoder;
 import com.xx_dev.apn.socks.common.ForwardMsgEncoder;
-import com.xx_dev.apn.socks.common.FrameDecoder;
-import com.xx_dev.apn.socks.common.FrameEncoder;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;

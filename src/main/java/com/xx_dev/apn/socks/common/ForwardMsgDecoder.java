@@ -70,7 +70,8 @@ public class ForwardMsgDecoder extends ReplayingDecoder<ForwardMsgDecoder.STATE>
             type = byteBuf.readByte();
             checkpoint(STATE.READ_STREAM_ID);
         }
-        default:break;
+        default:
+            break;
         }
 
         switch (type) {
@@ -192,7 +193,7 @@ public class ForwardMsgDecoder extends ReplayingDecoder<ForwardMsgDecoder.STATE>
 
     private static void ipv6toStr(StringBuilder sb, byte[] src, int fromHextet, int toHextet) {
         int i;
-        toHextet --;
+        toHextet--;
         for (i = fromHextet; i < toHextet; i++) {
             appendHextet(sb, src, i);
             sb.append(':');

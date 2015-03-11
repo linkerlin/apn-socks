@@ -15,7 +15,6 @@
  */
 package com.xx_dev.apn.socks.common;
 
-import com.xx_dev.apn.socks.util.SocksServerUtils;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;

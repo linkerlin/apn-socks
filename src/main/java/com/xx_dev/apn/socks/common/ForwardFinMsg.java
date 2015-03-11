@@ -22,7 +22,7 @@ import io.netty.buffer.ByteBuf;
  * @author xmx
  * @version $Id: com.xx_dev.apn.socks.common.ForwardFinMsg 2015-03-07 22:30 (xmx) Exp $
  */
-public class ForwardFinMsg extends ForwardMsg{
+public class ForwardFinMsg extends ForwardMsg {
 
     public ForwardFinMsg(int streamId) {
         super(3, streamId);

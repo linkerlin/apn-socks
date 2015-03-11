@@ -17,7 +17,6 @@
 package com.xx_dev.apn.socks.local;
 
 import com.xx_dev.apn.socks.common.DirectClientHandler;
-import com.xx_dev.apn.socks.common.ForwardRequest;
 import com.xx_dev.apn.socks.common.RelayHandler;
 import com.xx_dev.apn.socks.util.SocksServerUtils;
 import io.netty.bootstrap.Bootstrap;

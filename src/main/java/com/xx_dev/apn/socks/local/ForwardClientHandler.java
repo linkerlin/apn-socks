@@ -18,13 +18,10 @@ package com.xx_dev.apn.socks.local;
 
 import com.xx_dev.apn.socks.common.ForwardMsg;
 import com.xx_dev.apn.socks.common.ForwardRelayMsg;
-import com.xx_dev.apn.socks.common.ForwardRequest;
 import com.xx_dev.apn.socks.common.ForwardResponse;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.socks.SocksCmdStatus;
-import io.netty.util.concurrent.Promise;
 
 /**
  * @author xmx
@@ -41,15 +38,13 @@ public class ForwardClientHandler extends SimpleChannelInboundHandler<ForwardMsg
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ForwardMsg forwardMsg) throws Exception {
-        if (forwardMsg.type() == 0 ) {
-            ForwardClientManager.ins().relay(forwardMsg.streamId(), ((ForwardRelayMsg)forwardMsg).relayMsgByteBuf());
-        } else if (forwardMsg.type() == 2 && ((ForwardResponse)forwardMsg).cmdStatus() == SocksCmdStatus.SUCCESS) {
+        if (forwardMsg.type() == 0) {
+            ForwardClientManager.ins().relay(forwardMsg.streamId(), ((ForwardRelayMsg) forwardMsg).relayMsgByteBuf());
+        } else if (forwardMsg.type() == 2 && ((ForwardResponse) forwardMsg).cmdStatus() == SocksCmdStatus.SUCCESS) {
             ForwardClientManager.ins().responseForwardConnectSuccess(forwardMsg.streamId(), ctx.channel());
-        } else if (forwardMsg.type() == 2 && ((ForwardResponse)forwardMsg).cmdStatus() != SocksCmdStatus.SUCCESS) {
+        } else if (forwardMsg.type() == 2 && ((ForwardResponse) forwardMsg).cmdStatus() != SocksCmdStatus.SUCCESS) {
             ForwardClientManager.ins().responseForwardConnectFail(forwardMsg.streamId(), ctx.channel());
-        }
-
-        else if (forwardMsg.type() == 3) {
+        } else if (forwardMsg.type() == 3) {
             ForwardClientManager.ins().closeInboundChannel(forwardMsg.streamId());
         } else {
             ctx.close();

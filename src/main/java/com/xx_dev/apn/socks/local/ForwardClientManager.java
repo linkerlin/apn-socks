@@ -29,7 +29,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoop;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.socks.SocksAddressType;
 import io.netty.handler.codec.socks.SocksCmdRequest;
@@ -37,7 +36,6 @@ import io.netty.handler.codec.socks.SocksCmdResponse;
 import io.netty.handler.codec.socks.SocksCmdStatus;
 import org.apache.log4j.Logger;
 
-import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -67,7 +65,7 @@ public class ForwardClientManager {
 
     public void forwardRequest(final ChannelHandlerContext inboundCtx, final SocksCmdRequest request) {
         final int currentStreamId = streamId.getAndAdd(1);
-        if (forwardChanne==null || !forwardChanne.isActive()) {
+        if (forwardChanne == null || !forwardChanne.isActive()) {
             Bootstrap b = new Bootstrap();
             b.group(inboundCtx.channel().eventLoop())
              .channel(NioSocketChannel.class)
@@ -85,7 +83,9 @@ public class ForwardClientManager {
                         // Connection established use handler provided results
                         forwardChanne = future.channel();
 
-                        forwardChanne.writeAndFlush(new ForwardRequest(currentStreamId, request.addressType(), request.host(), request.port()));
+                        forwardChanne.writeAndFlush(
+                                new ForwardRequest(currentStreamId, request.addressType(), request.host(),
+                                                   request.port()));
                     } else {
                         // Close the connection if the connection attempt has failed.
                         inboundCtx.channel().writeAndFlush(
@@ -96,30 +96,33 @@ public class ForwardClientManager {
             });
         } else {
             map.put(currentStreamId, inboundCtx);
-            forwardChanne.writeAndFlush(new ForwardRequest(currentStreamId, request.addressType(), request.host(), request.port()));
+            forwardChanne.writeAndFlush(
+                    new ForwardRequest(currentStreamId, request.addressType(), request.host(), request.port()));
         }
     }
 
     public void responseForwardConnectSuccess(final int streamId, final Channel outboundChannel) {
         LoggerUtil.info(logger, "FCS: " + streamId);
         map.get(streamId).channel()
-                            .writeAndFlush(new SocksCmdResponse(SocksCmdStatus.SUCCESS, SocksAddressType.IPv4))
-                            .addListener(new ChannelFutureListener() {
-                                @Override
-                                public void operationComplete(ChannelFuture channelFuture) {
-                                    if (channelFuture.isSuccess()) {
-                                        try {
-                                            map.get(streamId).pipeline().remove(ApnSocksLocalServerConnectHandler.NAME);
-                                        } catch (NoSuchElementException e) {
-                                            LoggerUtil.error(logger, e.getMessage()+", " + streamId + ", " + map.get(streamId).isRemoved() + ", " + map.get(streamId).channel().isActive());
-                                        }
+           .writeAndFlush(new SocksCmdResponse(SocksCmdStatus.SUCCESS, SocksAddressType.IPv4))
+           .addListener(new ChannelFutureListener() {
+               @Override
+               public void operationComplete(ChannelFuture channelFuture) {
+                   if (channelFuture.isSuccess()) {
+                       try {
+                           map.get(streamId).pipeline().remove(ApnSocksLocalServerConnectHandler.NAME);
+                       } catch (NoSuchElementException e) {
+                           LoggerUtil.error(logger,
+                                            e.getMessage() + ", " + streamId + ", " + map.get(streamId).isRemoved() +
+                                            ", " + map.get(streamId).channel().isActive());
+                       }
 
-                                        map.get(streamId).pipeline().addLast(new ForwardRelayHandler(streamId, outboundChannel));
-                                    } else {
-                                        outboundChannel.writeAndFlush(new ForwardFinMsg(streamId));
-                                    }
-                                }
-                            });
+                       map.get(streamId).pipeline().addLast(new ForwardRelayHandler(streamId, outboundChannel));
+                   } else {
+                       outboundChannel.writeAndFlush(new ForwardFinMsg(streamId));
+                   }
+               }
+           });
 
     }
 

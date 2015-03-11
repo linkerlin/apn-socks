@@ -18,12 +18,9 @@ package com.xx_dev.apn.socks.local;
 
 import com.xx_dev.apn.socks.common.ForwardMsgDecoder;
 import com.xx_dev.apn.socks.common.ForwardMsgEncoder;
-import com.xx_dev.apn.socks.common.ForwardRequest;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.util.concurrent.Promise;
 
 /**
  * @author xmx
