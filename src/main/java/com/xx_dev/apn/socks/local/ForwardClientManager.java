@@ -73,7 +73,7 @@ public class ForwardClientManager {
              .option(ChannelOption.SO_KEEPALIVE, true)
              .handler(new ForwardClientInitializer());
 
-            b.connect("apnsocks.test.server", 8889).addListener(new ChannelFutureListener() {
+            b.connect("apnsocks.test.server2", 8889).addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture future) throws Exception {
                     if (future.isSuccess()) {
@@ -134,6 +134,7 @@ public class ForwardClientManager {
     }
 
     public void relay(final int streamId, final ByteBuf byteBuf) {
+        LoggerUtil.info(logger, "RLY: " + streamId);
         ByteBuf _byteBuf = Unpooled.copiedBuffer(byteBuf);
         ChannelHandlerContext ctx = map.get(streamId);
         ctx.channel().writeAndFlush(_byteBuf);

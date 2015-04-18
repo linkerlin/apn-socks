@@ -16,14 +16,18 @@
 
 package com.xx_dev.apn.socks.common;
 
+import com.xx_dev.apn.socks.util.LoggerUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
+import org.apache.log4j.Logger;
 
 public final class ForwardRelayHandler extends ChannelInboundHandlerAdapter {
+
+    private static final Logger logger = Logger.getLogger(ForwardRelayHandler.class);
 
     private final int streamId;
     private final Channel forwardChannel;

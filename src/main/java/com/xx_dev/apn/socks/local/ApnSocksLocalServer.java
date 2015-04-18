@@ -38,20 +38,29 @@ public final class ApnSocksLocalServer {
 
     public void start() {
         LoggerUtil.info(logger, "ApnSocks Local Server Starting on 8888");
-        try {
-            ServerBootstrap b = new ServerBootstrap();
-            b.group(bossGroup, workerGroup)
-             .channel(NioServerSocketChannel.class)
-             .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-             .handler(new LoggingHandler("NET_LOGGER", LogLevel.DEBUG))
-             .childHandler(new ApnSocksLocalServerInitializer());
-            b.bind(PORT).sync().channel().closeFuture().sync();
-        } catch (Throwable t) {
-            logger.error(t.getMessage(), t);
-        } finally {
-            bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
-        }
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ServerBootstrap b = new ServerBootstrap();
+                    b.group(bossGroup, workerGroup)
+                     .channel(NioServerSocketChannel.class)
+                     .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                     .handler(new LoggingHandler("NET_LOGGER", LogLevel.DEBUG))
+                     .childHandler(new ApnSocksLocalServerInitializer());
+                    b.bind(PORT).sync().channel().closeFuture().sync();
+                } catch (Throwable t) {
+                    logger.error(t.getMessage(), t);
+                } finally {
+                    bossGroup.shutdownGracefully();
+                    workerGroup.shutdownGracefully();
+                }
+            }
+        });
+
+        thread.start();
+
     }
 
     public void shutdown() {
