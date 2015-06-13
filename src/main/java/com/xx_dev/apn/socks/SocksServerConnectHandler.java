@@ -59,7 +59,7 @@ public final class SocksServerConnectHandler extends SimpleChannelInboundHandler
                                 }
                             });
                 } else {
-                    restLogger.info(request.host() + ":" + request.port() + "," + "T");
+                    restLogger.info(request.host() + ":" + request.port() + "," + "F");
                     ctx.channel().writeAndFlush(new SocksCmdResponse(SocksCmdStatus.FAILURE, request.addressType()));
                     SocksServerUtils.closeOnFlush(ctx.channel());
                 }

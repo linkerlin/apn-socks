@@ -57,7 +57,7 @@ public final class FackClient {
             ChannelFuture bindFuture = b.group(bossGroup, workerGroup)
                                         .channel(NioServerSocketChannel.class)
                                         .childHandler(
-                                                new HexDumpProxyInitializer("127.0.0.1",
+                                                new HexDumpProxyInitializer("",
                                                                             8889))
                                         .childOption(ChannelOption.AUTO_READ, false)
                                         .bind(8888);

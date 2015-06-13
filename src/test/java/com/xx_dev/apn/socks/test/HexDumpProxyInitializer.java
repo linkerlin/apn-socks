@@ -36,7 +36,7 @@ public class HexDumpProxyInitializer extends ChannelInitializer<SocketChannel> {
     @Override
     public void initChannel(SocketChannel ch) throws SSLException {
         ch.pipeline().addLast(
-                new LoggingHandler(LogLevel.INFO),
+                new LoggingHandler("BYTE_LOGGER", LogLevel.DEBUG),
                 new HexDumpProxyFrontendHandler(remoteHost, remotePort));
     }
 }
