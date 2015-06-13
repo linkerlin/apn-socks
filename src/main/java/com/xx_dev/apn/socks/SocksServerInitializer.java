@@ -31,9 +31,12 @@ public final class SocksServerInitializer extends ChannelInitializer<SocketChann
     @Override
     public void initChannel(SocketChannel socketChannel) throws Exception {
         ChannelPipeline p = socketChannel.pipeline();
-        p.addLast("log", new LoggingHandler("BYTE_LOGGER", LogLevel.DEBUG));
+
         p.addLast(new FakeHttpServerDecoder());
         p.addLast(new FakeHttpServerEncoder());
+
+        p.addLast("log", new LoggingHandler("BYTE_LOGGER", LogLevel.DEBUG));
+
         p.addLast(new SocksInitRequestDecoder());
         p.addLast(socksMessageEncoder);
         p.addLast(socksServerHandler);

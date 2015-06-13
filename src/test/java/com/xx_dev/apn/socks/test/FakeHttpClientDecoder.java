@@ -65,24 +65,29 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
                 this.checkpoint(STATE.READ_SKIP_2);
             }
             case READ_SKIP_2: {
-                in.skipBytes(63);
+                in.skipBytes(65);
                 this.checkpoint(STATE.READ_CONTENT);
             }
             case READ_CONTENT: {
-                byte[] buf = new byte[length];
-                in.readBytes(buf);
+                if (length > 0) {
+                    byte[] buf = new byte[length];
+                    in.readBytes(buf, 0, length);
 
-                byte[] res = new byte[length];
+                    byte[] res = new byte[length];
 
-                for (int i=0; i<length; i++) {
-                    res[i] = (byte)(buf[i] ^ key);
+                    for (int i=0; i<length; i++) {
+                        res[i] =  (byte)(buf[i] ^ key);
+                    }
+
+                    ByteBuf outBuf = ctx.alloc().buffer();
+
+                    outBuf.writeBytes(res);
+
+                    out.add(outBuf);
                 }
 
-                ByteBuf outBuf = ctx.alloc().buffer();
-
-                outBuf.writeBytes(res);
-
-                out.add(outBuf);
+                this.checkpoint(STATE.READ_SKIP_1);
+                break;
             }
             default:
                 throw new Error("Shouldn't reach here.");

@@ -42,7 +42,7 @@ public final class SocksServer {
         }
     }
 
-    static final int PORT = Integer.parseInt(System.getProperty("port", "8888"));
+    static final int PORT = Integer.parseInt(System.getProperty("port", "8889"));
 
     public static void main(String[] args) throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);

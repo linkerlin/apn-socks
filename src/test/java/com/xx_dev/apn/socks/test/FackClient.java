@@ -32,7 +32,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class HexDumpProxy {
+public final class FackClient {
 
     static {
         File log4jConfigFile = new File("conf/log4j.xml");
@@ -52,21 +52,15 @@ public final class HexDumpProxy {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-
-
-
-
-
         try {
             ServerBootstrap b = new ServerBootstrap();
             ChannelFuture bindFuture = b.group(bossGroup, workerGroup)
                                         .channel(NioServerSocketChannel.class)
-                                        .handler(new LoggingHandler("BYTE_LOGGER", LogLevel.DEBUG))
                                         .childHandler(
-                                                new HexDumpProxyInitializer("",
-                                                                            8888))
+                                                new HexDumpProxyInitializer("127.0.0.1",
+                                                                            8889))
                                         .childOption(ChannelOption.AUTO_READ, false)
-                                        .bind(8889);
+                                        .bind(8888);
 
             bindFuture.sync().channel().closeFuture().sync();
         } finally {

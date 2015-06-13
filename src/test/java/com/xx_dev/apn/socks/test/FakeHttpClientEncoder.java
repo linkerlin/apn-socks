@@ -33,7 +33,6 @@ public class FakeHttpClientEncoder extends MessageToByteEncoder<ByteBuf> {
     protected void encode(final ChannelHandlerContext ctx, final ByteBuf msg, final ByteBuf out) throws Exception {
         int length = msg.readableBytes();
 
-
         out.writeBytes(TextUtil.toUTF8Bytes("POST /form.action HTTP/1.1\r\n"));
         out.writeBytes(TextUtil.toUTF8Bytes("HOST: www.baidu.com\r\n"));
         out.writeBytes(TextUtil.toUTF8Bytes("X-C: " + String.format("%1$08x", length) + "\r\n"));
@@ -42,15 +41,19 @@ public class FakeHttpClientEncoder extends MessageToByteEncoder<ByteBuf> {
         out.writeBytes(TextUtil.toUTF8Bytes("\r\n"));
 
 
-        byte[] buf = new byte[msg.readableBytes()];
-        msg.readBytes(buf);
+        if (length > 0) {
+            byte[] buf = new byte[length];
+            msg.readBytes(buf, 0 , length);
 
-        byte[] res = new byte[msg.readableBytes()];
+            byte[] res = new byte[length];
 
-        for (int i=0; i< buf.length; i++ ) {
-            res[i] = (byte)(buf[i] ^ key);
+            for (int i=0; i< buf.length; i++ ) {
+                //res[i] = (byte)(buf[i] ^ key);
+                res[i] =  (byte)(buf[i] ^ key);
+            }
+
+            out.writeBytes(res);
         }
 
-        out.writeBytes(res);
     }
 }

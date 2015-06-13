@@ -19,6 +19,7 @@ package com.xx_dev.apn.socks;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
+import org.apache.log4j.Logger;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -33,6 +34,8 @@ import java.util.List;
  * @version $Id: com.xx_dev.apn.proxy.ApnProxyAESDecoder 14-6-28 12:09 (xmx) Exp $
  */
 public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecoder.STATE> {
+
+    private static final Logger logger = Logger.getLogger(FakeHttpServerDecoder.class);
 
     private byte key = 0x23;
 
@@ -66,28 +69,36 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
 
             String s = TextUtil.fromUTF8Bytes(buf);
 
+
             length = Integer.parseInt(s, 16);
+
             this.checkpoint(STATE.READ_SKIP_2);
         }
         case READ_SKIP_2: {
-            in.skipBytes(48);
+            in.skipBytes(50);
             this.checkpoint(STATE.READ_CONTENT);
         }
         case READ_CONTENT: {
-            byte[] buf = new byte[length];
-            in.readBytes(buf);
 
-            byte[] res = new byte[length];
+            if (length > 0) {
+                byte[] buf = new byte[length];
+                in.readBytes(buf, 0, length);
 
-            for (int i=0; i<length; i++) {
-                res[i] = (byte)(buf[i] ^ key);
+                byte[] res = new byte[length];
+
+                for (int i=0; i<length; i++) {
+                    res[i] =  (byte)(buf[i] ^ key);
+                }
+
+                ByteBuf outBuf = ctx.alloc().buffer();
+
+                outBuf.writeBytes(res);
+
+                out.add(outBuf);
             }
 
-            ByteBuf outBuf = ctx.alloc().buffer();
-
-            outBuf.writeBytes(res);
-
-            out.add(outBuf);
+            this.checkpoint(STATE.READ_SKIP_1);
+            break;
         }
         default:
             throw new Error("Shouldn't reach here.");

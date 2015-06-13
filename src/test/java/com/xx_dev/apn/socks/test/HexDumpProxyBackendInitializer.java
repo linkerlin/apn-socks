@@ -36,6 +36,8 @@ public class HexDumpProxyBackendInitializer extends ChannelInitializer<SocketCha
 
     @Override
     public void initChannel(SocketChannel ch) throws SSLException {
+        ch.pipeline().addLast(new FakeHttpClientDecoder());
+        ch.pipeline().addLast(new FakeHttpClientEncoder());
         ch.pipeline().addLast(new HexDumpProxyBackendHandler(inboundChannel));
     }
 }

@@ -33,7 +33,6 @@ public class FakeHttpServerEncoder extends MessageToByteEncoder<ByteBuf> {
     protected void encode(final ChannelHandlerContext ctx, final ByteBuf msg, final ByteBuf out) throws Exception {
         int length = msg.readableBytes();
 
-
         out.writeBytes(TextUtil.toUTF8Bytes("HTTP/1.1 200 OK \r\n"));
         out.writeBytes(TextUtil.toUTF8Bytes("Content-Type: image/png\r\n"));
         out.writeBytes(TextUtil.toUTF8Bytes("X-C: " + String.format("%1$08x", length) + "\r\n"));
@@ -43,15 +42,18 @@ public class FakeHttpServerEncoder extends MessageToByteEncoder<ByteBuf> {
         out.writeBytes(TextUtil.toUTF8Bytes("\r\n"));
 
 
-        byte[] buf = new byte[msg.readableBytes()];
-        msg.readBytes(buf);
+        if (length > 0) {
+            byte[] buf = new byte[length];
+            msg.readBytes(buf);
 
-        byte[] res = new byte[msg.readableBytes()];
+            byte[] res = new byte[length];
 
-        for (int i=0; i< buf.length; i++ ) {
-            res[i] = (byte)(buf[i] ^ key);
+            for (int i=0; i< buf.length; i++ ) {
+                //res[i] = (byte)(buf[i] ^ key);
+                res[i] =  (byte)(buf[i] ^ key);
+            }
+
+            out.writeBytes(res);
         }
-
-        out.writeBytes(res);
     }
 }
