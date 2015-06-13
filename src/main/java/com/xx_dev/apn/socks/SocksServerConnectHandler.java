@@ -30,9 +30,12 @@ import io.netty.handler.codec.socks.SocksCmdStatus;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.Promise;
+import org.apache.log4j.Logger;
 
 @ChannelHandler.Sharable
 public final class SocksServerConnectHandler extends SimpleChannelInboundHandler<SocksCmdRequest> {
+
+    private static final Logger restLogger = Logger.getLogger("REST_LOGGER");
 
     private final Bootstrap b = new Bootstrap();
 
@@ -45,6 +48,7 @@ public final class SocksServerConnectHandler extends SimpleChannelInboundHandler
             public void operationComplete(final Future<Channel> future) throws Exception {
                 final Channel outboundChannel = future.getNow();
                 if (future.isSuccess()) {
+                    restLogger.info(request.host() + ":" + request.port() + "," + "T");
                     ctx.channel().writeAndFlush(new SocksCmdResponse(SocksCmdStatus.SUCCESS, request.addressType()))
                             .addListener(new ChannelFutureListener() {
                                 @Override
@@ -55,6 +59,7 @@ public final class SocksServerConnectHandler extends SimpleChannelInboundHandler
                                 }
                             });
                 } else {
+                    restLogger.info(request.host() + ":" + request.port() + "," + "T");
                     ctx.channel().writeAndFlush(new SocksCmdResponse(SocksCmdStatus.FAILURE, request.addressType()));
                     SocksServerUtils.closeOnFlush(ctx.channel());
                 }

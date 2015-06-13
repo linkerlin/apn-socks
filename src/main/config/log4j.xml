@@ -23,7 +23,7 @@
         </layout>
     </appender>
 
-    <logger name="HTTP_REST_LOGGER" additivity="false">
+    <logger name="REST_LOGGER" additivity="false">
         <level value="info"/>
         <appender-ref ref="CONSOLE_APPENDER"/>
     </logger>
