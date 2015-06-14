@@ -14,7 +14,7 @@
  * under the License.
  */
 
-package com.xx_dev.apn.socks.test;
+package com.xx_dev.apn.socks.local;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -23,11 +23,11 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-public class HexDumpProxyBackendHandler extends ChannelInboundHandlerAdapter {
+public class PortForwardProxyBackendHandler extends ChannelInboundHandlerAdapter {
 
     private final Channel inboundChannel;
 
-    public HexDumpProxyBackendHandler(Channel inboundChannel) {
+    public PortForwardProxyBackendHandler(Channel inboundChannel) {
         this.inboundChannel = inboundChannel;
     }
 
@@ -53,12 +53,12 @@ public class HexDumpProxyBackendHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        HexDumpProxyFrontendHandler.closeOnFlush(inboundChannel);
+        PortForwardProxyFrontendHandler.closeOnFlush(inboundChannel);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();
-        HexDumpProxyFrontendHandler.closeOnFlush(ctx.channel());
+        PortForwardProxyFrontendHandler.closeOnFlush(ctx.channel());
     }
 }

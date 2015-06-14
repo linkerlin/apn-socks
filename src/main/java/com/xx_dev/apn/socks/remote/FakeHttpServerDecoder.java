@@ -14,19 +14,14 @@
  * under the License.
  */
 
-package com.xx_dev.apn.socks;
+package com.xx_dev.apn.socks.remote;
 
+import com.xx_dev.apn.socks.common.utils.TextUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
 import org.apache.log4j.Logger;
 
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -37,7 +32,7 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
 
     private static final Logger logger = Logger.getLogger(FakeHttpServerDecoder.class);
 
-    private byte key = 0x23;
+    private int key = 0xA2;
 
     enum STATE {
         READ_SKIP_1,
@@ -87,7 +82,7 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
                 byte[] res = new byte[length];
 
                 for (int i=0; i<length; i++) {
-                    res[i] =  (byte)(buf[i] ^ key);
+                    res[i] =  (byte)(buf[i] ^ (key & 0xFF));
                 }
 
                 ByteBuf outBuf = ctx.alloc().buffer();
@@ -103,9 +98,6 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
         default:
             throw new Error("Shouldn't reach here.");
         }
-
-
     }
-
 
 }

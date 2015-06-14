@@ -14,7 +14,7 @@
  * under the License.
  */
 
-package com.xx_dev.apn.socks.test;
+package com.xx_dev.apn.socks.local;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
@@ -23,12 +23,12 @@ import io.netty.handler.logging.LoggingHandler;
 
 import javax.net.ssl.SSLException;
 
-public class HexDumpProxyInitializer extends ChannelInitializer<SocketChannel> {
+public class PortForwardProxyFrontendInitializer extends ChannelInitializer<SocketChannel> {
 
     private final String remoteHost;
     private final int remotePort;
 
-    public HexDumpProxyInitializer(String remoteHost, int remotePort) {
+    public PortForwardProxyFrontendInitializer(String remoteHost, int remotePort) {
         this.remoteHost = remoteHost;
         this.remotePort = remotePort;
     }
@@ -37,6 +37,6 @@ public class HexDumpProxyInitializer extends ChannelInitializer<SocketChannel> {
     public void initChannel(SocketChannel ch) throws SSLException {
         ch.pipeline().addLast(
                 new LoggingHandler("BYTE_LOGGER", LogLevel.DEBUG),
-                new HexDumpProxyFrontendHandler(remoteHost, remotePort));
+                new PortForwardProxyFrontendHandler(remoteHost, remotePort));
     }
 }

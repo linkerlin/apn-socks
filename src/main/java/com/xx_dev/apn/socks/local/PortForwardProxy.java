@@ -14,25 +14,22 @@
  * under the License.
  */
 
-package com.xx_dev.apn.socks.test;
+package com.xx_dev.apn.socks.local;
 
+import com.xx_dev.apn.socks.common.config.LocalConfig;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import javax.xml.parsers.FactoryConfigurationError;
 import java.io.File;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.List;
 
-public final class FackClient {
+public final class PortForwardProxy {
 
     static {
         File log4jConfigFile = new File("conf/log4j.xml");
@@ -57,10 +54,10 @@ public final class FackClient {
             ChannelFuture bindFuture = b.group(bossGroup, workerGroup)
                                         .channel(NioServerSocketChannel.class)
                                         .childHandler(
-                                                new HexDumpProxyInitializer("",
-                                                                            8889))
+                                                new PortForwardProxyFrontendInitializer(LocalConfig.ins().getRemoteHost(),
+                                                                                        LocalConfig.ins().getRemotePort()))
                                         .childOption(ChannelOption.AUTO_READ, false)
-                                        .bind(8888);
+                                        .bind(LocalConfig.ins().getLocalPort());
 
             bindFuture.sync().channel().closeFuture().sync();
         } finally {

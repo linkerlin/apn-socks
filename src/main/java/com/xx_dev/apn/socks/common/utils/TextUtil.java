@@ -14,7 +14,7 @@
  * under the License.
  */
 
-package com.xx_dev.apn.socks;
+package com.xx_dev.apn.socks.common.utils;
 
 import java.io.UnsupportedEncodingException;
 

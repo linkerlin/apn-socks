@@ -14,7 +14,7 @@
  * under the License.
  */
 
-package com.xx_dev.apn.socks.test;
+package com.xx_dev.apn.socks.local;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
@@ -25,14 +25,14 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelOption;
 
-public class HexDumpProxyFrontendHandler extends ChannelInboundHandlerAdapter {
+public class PortForwardProxyFrontendHandler extends ChannelInboundHandlerAdapter {
 
     private final String remoteHost;
     private final int remotePort;
 
     private volatile Channel outboundChannel;
 
-    public HexDumpProxyFrontendHandler(String remoteHost, int remotePort) {
+    public PortForwardProxyFrontendHandler(String remoteHost, int remotePort) {
         this.remoteHost = remoteHost;
         this.remotePort = remotePort;
     }
@@ -45,7 +45,7 @@ public class HexDumpProxyFrontendHandler extends ChannelInboundHandlerAdapter {
         Bootstrap b = new Bootstrap();
         b.group(inboundChannel.eventLoop())
          .channel(ctx.channel().getClass())
-         .handler(new HexDumpProxyBackendInitializer(inboundChannel))
+         .handler(new PortForwardProxyBackendInitializer(inboundChannel))
          .option(ChannelOption.AUTO_READ, false);
         ChannelFuture f = b.connect(remoteHost, remotePort);
         outboundChannel = f.channel();

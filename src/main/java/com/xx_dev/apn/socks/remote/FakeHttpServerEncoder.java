@@ -14,20 +14,20 @@
  * under the License.
  */
 
-package com.xx_dev.apn.socks;
+package com.xx_dev.apn.socks.remote;
 
+import com.xx_dev.apn.socks.common.utils.TextUtil;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufProcessor;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
 /**
  * @author xmx
- * @version $Id: com.xx_dev.apn.socks.FakeHttpServerEncoder 2015-06-13 19:16 (xmx) Exp $
+ * @version $Id: com.xx_dev.apn.socks.remote.FakeHttpServerEncoder 2015-06-13 19:16 (xmx) Exp $
  */
 public class FakeHttpServerEncoder extends MessageToByteEncoder<ByteBuf> {
 
-    private byte key = 0x23;
+    private int key = 0xA2;
 
     @Override
     protected void encode(final ChannelHandlerContext ctx, final ByteBuf msg, final ByteBuf out) throws Exception {
@@ -50,7 +50,7 @@ public class FakeHttpServerEncoder extends MessageToByteEncoder<ByteBuf> {
 
             for (int i=0; i< buf.length; i++ ) {
                 //res[i] = (byte)(buf[i] ^ key);
-                res[i] =  (byte)(buf[i] ^ key);
+                res[i] =  (byte)(buf[i] ^ (key & 0xFF));
             }
 
             out.writeBytes(res);

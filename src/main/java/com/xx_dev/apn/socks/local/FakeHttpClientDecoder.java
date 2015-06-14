@@ -14,9 +14,10 @@
  * under the License.
  */
 
-package com.xx_dev.apn.socks.test;
+package com.xx_dev.apn.socks.local;
 
-import com.xx_dev.apn.socks.TextUtil;
+import com.xx_dev.apn.socks.common.config.LocalConfig;
+import com.xx_dev.apn.socks.common.utils.TextUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
@@ -28,8 +29,6 @@ import java.util.List;
  * @version $Id: com.xx_dev.apn.proxy.ApnProxyAESDecoder 14-6-28 12:09 (xmx) Exp $
  */
 public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecoder.STATE> {
-
-    private byte key = 0x23;
 
     enum STATE {
         READ_SKIP_1,
@@ -76,7 +75,7 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
                     byte[] res = new byte[length];
 
                     for (int i=0; i<length; i++) {
-                        res[i] =  (byte)(buf[i] ^ key);
+                        res[i] =  (byte)(buf[i] ^ LocalConfig.ins().getEncryptKey());
                     }
 
                     ByteBuf outBuf = ctx.alloc().buffer();

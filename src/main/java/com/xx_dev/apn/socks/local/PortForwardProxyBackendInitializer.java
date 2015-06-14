@@ -14,12 +14,11 @@
  * under the License.
  */
 
-package com.xx_dev.apn.socks.test;
+package com.xx_dev.apn.socks.local;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.ssl.SslContext;
 
 import javax.net.ssl.SSLException;
 
@@ -27,10 +26,10 @@ import javax.net.ssl.SSLException;
  * @author xmx
  * @version $Id: com.xx_dev.port_forwared.HexDumpProxyBackendInitializer 2015-03-17 21:20 (xmx) Exp $
  */
-public class HexDumpProxyBackendInitializer extends ChannelInitializer<SocketChannel> {
+public class PortForwardProxyBackendInitializer extends ChannelInitializer<SocketChannel> {
     private final Channel inboundChannel;
 
-    public HexDumpProxyBackendInitializer(Channel inboundChannel) {
+    public PortForwardProxyBackendInitializer(Channel inboundChannel) {
         this.inboundChannel = inboundChannel;
     }
 
@@ -38,6 +37,6 @@ public class HexDumpProxyBackendInitializer extends ChannelInitializer<SocketCha
     public void initChannel(SocketChannel ch) throws SSLException {
         ch.pipeline().addLast(new FakeHttpClientDecoder());
         ch.pipeline().addLast(new FakeHttpClientEncoder());
-        ch.pipeline().addLast(new HexDumpProxyBackendHandler(inboundChannel));
+        ch.pipeline().addLast(new PortForwardProxyBackendHandler(inboundChannel));
     }
 }

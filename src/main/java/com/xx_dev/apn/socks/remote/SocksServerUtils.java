@@ -13,29 +13,22 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.xx_dev.apn.socks;
+package com.xx_dev.apn.socks.remote;
 
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.util.concurrent.Promise;
+import io.netty.channel.ChannelFutureListener;
 
-public final class DirectClientHandler extends ChannelInboundHandlerAdapter {
+public final class SocksServerUtils {
 
-    private final Promise<Channel> promise;
-
-    public DirectClientHandler(Promise<Channel> promise) {
-        this.promise = promise;
+    /**
+     * Closes the specified channel after all queued write requests are flushed.
+     */
+    public static void closeOnFlush(Channel ch) {
+        if (ch.isActive()) {
+            ch.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+        }
     }
 
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) {
-        ctx.pipeline().remove(this);
-        promise.setSuccess(ctx.channel());
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable throwable) {
-        promise.setFailure(throwable);
-    }
+    private SocksServerUtils() { }
 }

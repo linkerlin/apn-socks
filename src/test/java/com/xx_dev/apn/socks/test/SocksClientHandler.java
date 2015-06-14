@@ -16,23 +16,17 @@
 
 package com.xx_dev.apn.socks.test;
 
-import com.xx_dev.apn.socks.SocksServerConnectHandler;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.socks.SocksAddressType;
-import io.netty.handler.codec.socks.SocksAuthResponse;
 import io.netty.handler.codec.socks.SocksAuthScheme;
-import io.netty.handler.codec.socks.SocksAuthStatus;
 import io.netty.handler.codec.socks.SocksCmdRequest;
-import io.netty.handler.codec.socks.SocksCmdRequestDecoder;
 import io.netty.handler.codec.socks.SocksCmdResponse;
 import io.netty.handler.codec.socks.SocksCmdResponseDecoder;
 import io.netty.handler.codec.socks.SocksCmdStatus;
 import io.netty.handler.codec.socks.SocksCmdType;
 import io.netty.handler.codec.socks.SocksInitRequest;
-import io.netty.handler.codec.socks.SocksInitResponse;
-import io.netty.handler.codec.socks.SocksRequest;
 import io.netty.handler.codec.socks.SocksResponse;
 import io.netty.util.CharsetUtil;
 
