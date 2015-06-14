@@ -14,4 +14,4 @@ for jar in `ls lib/*.jar`
 do
     jars="$jars:""$jar"
 done
-java $JAVA_OPTS -cp $jars com.xx_dev.apn.socks.remote.SocksServer
+java $JAVA_OPTS -cp $jars com.xx_dev.apn.socks.remote.SocksServer 1>/dev/null 2>&1 &
