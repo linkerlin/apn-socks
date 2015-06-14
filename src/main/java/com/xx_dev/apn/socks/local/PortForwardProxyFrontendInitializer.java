@@ -35,8 +35,7 @@ public class PortForwardProxyFrontendInitializer extends ChannelInitializer<Sock
 
     @Override
     public void initChannel(SocketChannel ch) throws SSLException {
-        ch.pipeline().addLast(
-                new LoggingHandler("BYTE_LOGGER", LogLevel.DEBUG),
-                new PortForwardProxyFrontendHandler(remoteHost, remotePort));
+        ch.pipeline().addLast(new LoggingHandler("BYTE_LOGGER", LogLevel.DEBUG));
+        ch.pipeline().addLast(new PortForwardProxyFrontendHandler(remoteHost, remotePort));
     }
 }

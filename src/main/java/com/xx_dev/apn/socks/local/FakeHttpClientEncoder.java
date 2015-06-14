@@ -28,8 +28,6 @@ import io.netty.handler.codec.MessageToByteEncoder;
  */
 public class FakeHttpClientEncoder extends MessageToByteEncoder<ByteBuf> {
 
-    private byte key = 0x23;
-
     @Override
     protected void encode(final ChannelHandlerContext ctx, final ByteBuf msg, final ByteBuf out) throws Exception {
         int length = msg.readableBytes();
@@ -50,7 +48,7 @@ public class FakeHttpClientEncoder extends MessageToByteEncoder<ByteBuf> {
 
             for (int i=0; i< buf.length; i++ ) {
                 //res[i] = (byte)(buf[i] ^ key);
-                res[i] =  (byte)(buf[i] ^ LocalConfig.ins().getEncryptKey());
+                res[i] =  (byte)(buf[i] ^ (LocalConfig.ins().getEncryptKey() & 0xFF));
             }
 
             out.writeBytes(res);

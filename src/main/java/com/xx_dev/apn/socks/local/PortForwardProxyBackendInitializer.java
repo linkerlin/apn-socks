@@ -19,6 +19,8 @@ package com.xx_dev.apn.socks.local;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 import javax.net.ssl.SSLException;
 
@@ -37,6 +39,7 @@ public class PortForwardProxyBackendInitializer extends ChannelInitializer<Socke
     public void initChannel(SocketChannel ch) throws SSLException {
         ch.pipeline().addLast(new FakeHttpClientDecoder());
         ch.pipeline().addLast(new FakeHttpClientEncoder());
+
         ch.pipeline().addLast(new PortForwardProxyBackendHandler(inboundChannel));
     }
 }

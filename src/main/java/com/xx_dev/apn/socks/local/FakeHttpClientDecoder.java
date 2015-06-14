@@ -75,7 +75,7 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
                     byte[] res = new byte[length];
 
                     for (int i=0; i<length; i++) {
-                        res[i] =  (byte)(buf[i] ^ LocalConfig.ins().getEncryptKey());
+                        res[i] =  (byte)(buf[i] ^ (LocalConfig.ins().getEncryptKey() & 0xFF));
                     }
 
                     ByteBuf outBuf = ctx.alloc().buffer();
