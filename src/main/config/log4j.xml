@@ -52,7 +52,7 @@
 
   <logger name="REST_LOGGER" additivity="false">
     <level value="info"/>
-    <appender-ref ref="HTTP_REST_APPENDER"/>
+    <appender-ref ref="REST_APPENDER"/>
   </logger>
 
   <logger name="BYTE_LOGGER" additivity="false">
