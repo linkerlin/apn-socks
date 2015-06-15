@@ -17,36 +17,57 @@
 
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration>
-    <appender name="CONSOLE_APPENDER" class="org.apache.log4j.ConsoleAppender">
-        <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="[%p] %d %t %c - : %m%n"/>
-        </layout>
-    </appender>
+  <appender name="CONSOLE_APPENDER" class="org.apache.log4j.ConsoleAppender">
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d %t %c %5p -: %m%n"/>
+    </layout>
+  </appender>
 
-    <logger name="REST_LOGGER" additivity="false">
-        <level value="info"/>
-        <appender-ref ref="CONSOLE_APPENDER"/>
-    </logger>
+  <appender name="DEFAULT_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="file" value="log/default.log"/>
+    <param name="append" value="true"/>
+    <param name="encoding" value="UTF-8"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d %t %c %5p -: %m%n"/>
+    </layout>
+  </appender>
 
-    <logger name="BYTE_LOGGER" additivity="false">
-        <level value="info"/>
-        <appender-ref ref="CONSOLE_APPENDER"/>
-    </logger>
+  <appender name="REST_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="file" value="log/rest.log"/>
+    <param name="append" value="true"/>
+    <param name="encoding" value="UTF-8"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d %t %5p -: %m%n"/>
+    </layout>
+  </appender>
 
-    <logger name="NET_LOGGER" additivity="false">
-        <level value="info"/>
-        <appender-ref ref="CONSOLE_APPENDER"/>
-    </logger>
+  <appender name="BYTE_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="file" value="log/byte.log"/>
+    <param name="append" value="true"/>
+    <param name="encoding" value="UTF-8"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d %t %5p -: %m%n"/>
+    </layout>
+  </appender>
 
-    <logger name="com.xx_dev.apn.socks" additivity="false">
-        <level value="info"/>
-        <appender-ref ref="CONSOLE_APPENDER"/>
-    </logger>
+  <logger name="REST_LOGGER" additivity="false">
+    <level value="info"/>
+    <appender-ref ref="HTTP_REST_APPENDER"/>
+  </logger>
 
-    <root>
-        <level value="info"/>
-        <appender-ref ref="CONSOLE_APPENDER"/>
-    </root>
+  <logger name="BYTE_LOGGER" additivity="false">
+    <level value="warn"/>
+    <appender-ref ref="BYTE_APPENDER"/>
+  </logger>
+
+  <logger name="com.xx_dev.apn.socks" additivity="false">
+    <level value="info"/>
+    <appender-ref ref="DEFAULT_APPENDER"/>
+  </logger>
+
+  <root>
+    <level value="info"/>
+    <appender-ref ref="DEFAULT_APPENDER"/>
+  </root>
 
 </log4j:configuration>
-
