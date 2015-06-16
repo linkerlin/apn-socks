@@ -19,8 +19,6 @@ package com.xx_dev.apn.socks.local;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 
 import javax.net.ssl.SSLException;
 

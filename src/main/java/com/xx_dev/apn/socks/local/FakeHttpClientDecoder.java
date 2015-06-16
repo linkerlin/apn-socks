@@ -16,7 +16,6 @@
 
 package com.xx_dev.apn.socks.local;
 
-import com.xx_dev.apn.socks.common.config.LocalConfig;
 import com.xx_dev.apn.socks.common.utils.TextUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -40,7 +39,6 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
     private int length;
 
 
-
     public FakeHttpClientDecoder() {
         super(STATE.READ_SKIP_1);
 
@@ -50,46 +48,46 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         switch (this.state()) {
-            case READ_SKIP_1: {
-                in.skipBytes(48);
-                this.checkpoint(STATE.READ_LENGTH);
-            }
-            case READ_LENGTH: {
-                byte[] buf = new byte[8];
-                in.readBytes(buf);
+        case READ_SKIP_1: {
+            in.skipBytes(48);
+            this.checkpoint(STATE.READ_LENGTH);
+        }
+        case READ_LENGTH: {
+            byte[] buf = new byte[8];
+            in.readBytes(buf);
 
-                String s = TextUtil.fromUTF8Bytes(buf);
+            String s = TextUtil.fromUTF8Bytes(buf);
 
-                length = Integer.parseInt(s, 16);
-                this.checkpoint(STATE.READ_SKIP_2);
-            }
-            case READ_SKIP_2: {
-                in.skipBytes(65);
-                this.checkpoint(STATE.READ_CONTENT);
-            }
-            case READ_CONTENT: {
-                if (length > 0) {
-                    byte[] buf = new byte[length];
-                    in.readBytes(buf, 0, length);
+            length = Integer.parseInt(s, 16);
+            this.checkpoint(STATE.READ_SKIP_2);
+        }
+        case READ_SKIP_2: {
+            in.skipBytes(65);
+            this.checkpoint(STATE.READ_CONTENT);
+        }
+        case READ_CONTENT: {
+            if (length > 0) {
+                byte[] buf = new byte[length];
+                in.readBytes(buf, 0, length);
 
-                    byte[] res = new byte[length];
+                byte[] res = new byte[length];
 
-                    for (int i=0; i<length; i++) {
-                        res[i] =  (byte)(buf[i] ^ (LocalConfig.ins().getEncryptKey() & 0xFF));
-                    }
-
-                    ByteBuf outBuf = ctx.alloc().buffer();
-
-                    outBuf.writeBytes(res);
-
-                    out.add(outBuf);
+                for (int i = 0; i < length; i++) {
+                    res[i] = (byte) (buf[i] ^ (LocalConfig.ins().getEncryptKey() & 0xFF));
                 }
 
-                this.checkpoint(STATE.READ_SKIP_1);
-                break;
+                ByteBuf outBuf = ctx.alloc().buffer();
+
+                outBuf.writeBytes(res);
+
+                out.add(outBuf);
             }
-            default:
-                throw new Error("Shouldn't reach here.");
+
+            this.checkpoint(STATE.READ_SKIP_1);
+            break;
+        }
+        default:
+            throw new Error("Shouldn't reach here.");
         }
 
 

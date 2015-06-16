@@ -16,7 +16,6 @@
 
 package com.xx_dev.apn.socks.local;
 
-import com.xx_dev.apn.socks.common.config.LocalConfig;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -54,8 +53,9 @@ public final class PortForwardProxy {
             ChannelFuture bindFuture = b.group(bossGroup, workerGroup)
                                         .channel(NioServerSocketChannel.class)
                                         .childHandler(
-                                                new PortForwardProxyFrontendInitializer(LocalConfig.ins().getRemoteHost(),
-                                                                                        LocalConfig.ins().getRemotePort()))
+                                                new PortForwardProxyFrontendInitializer(
+                                                        LocalConfig.ins().getRemoteHost(),
+                                                        LocalConfig.ins().getRemotePort()))
                                         .childOption(ChannelOption.AUTO_READ, false)
                                         .bind(LocalConfig.ins().getLocalPort());
 

@@ -30,5 +30,6 @@ public final class SocksServerUtils {
         }
     }
 
-    private SocksServerUtils() { }
+    private SocksServerUtils() {
+    }
 }

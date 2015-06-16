@@ -34,31 +34,31 @@ public final class SocksServerHandler extends SimpleChannelInboundHandler<SocksR
     @Override
     public void channelRead0(ChannelHandlerContext ctx, SocksRequest socksRequest) throws Exception {
         switch (socksRequest.requestType()) {
-            case INIT: {
-                // auth support example
-                //ctx.pipeline().addFirst(new SocksAuthRequestDecoder());
-                //ctx.write(new SocksInitResponse(SocksAuthScheme.AUTH_PASSWORD));
-                ctx.pipeline().addAfter("log", "cmdRequstDecoder", new SocksCmdRequestDecoder());
-                ctx.write(new SocksInitResponse(SocksAuthScheme.NO_AUTH));
-                break;
-            }
-            case AUTH:
-                ctx.pipeline().addAfter("log", "cmdRequstDecoder", new SocksCmdRequestDecoder());
-                ctx.write(new SocksAuthResponse(SocksAuthStatus.SUCCESS));
-                break;
-            case CMD:
-                SocksCmdRequest req = (SocksCmdRequest) socksRequest;
-                if (req.cmdType() == SocksCmdType.CONNECT) {
-                    ctx.pipeline().addLast(new SocksServerConnectHandler());
-                    ctx.pipeline().remove(this);
-                    ctx.fireChannelRead(socksRequest);
-                } else {
-                    ctx.close();
-                }
-                break;
-            case UNKNOWN:
+        case INIT: {
+            // auth support example
+            //ctx.pipeline().addFirst(new SocksAuthRequestDecoder());
+            //ctx.write(new SocksInitResponse(SocksAuthScheme.AUTH_PASSWORD));
+            ctx.pipeline().addAfter("log", "cmdRequstDecoder", new SocksCmdRequestDecoder());
+            ctx.write(new SocksInitResponse(SocksAuthScheme.NO_AUTH));
+            break;
+        }
+        case AUTH:
+            ctx.pipeline().addAfter("log", "cmdRequstDecoder", new SocksCmdRequestDecoder());
+            ctx.write(new SocksAuthResponse(SocksAuthStatus.SUCCESS));
+            break;
+        case CMD:
+            SocksCmdRequest req = (SocksCmdRequest) socksRequest;
+            if (req.cmdType() == SocksCmdType.CONNECT) {
+                ctx.pipeline().addLast(new SocksServerConnectHandler());
+                ctx.pipeline().remove(this);
+                ctx.fireChannelRead(socksRequest);
+            } else {
                 ctx.close();
-                break;
+            }
+            break;
+        case UNKNOWN:
+            ctx.close();
+            break;
         }
     }
 

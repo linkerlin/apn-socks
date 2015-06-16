@@ -43,35 +43,37 @@ public final class SocksServerConnectHandler extends SimpleChannelInboundHandler
     public void channelRead0(final ChannelHandlerContext ctx, final SocksCmdRequest request) throws Exception {
         Promise<Channel> promise = ctx.executor().newPromise();
         promise.addListener(
-            new GenericFutureListener<Future<Channel>>() {
-            @Override
-            public void operationComplete(final Future<Channel> future) throws Exception {
-                final Channel outboundChannel = future.getNow();
-                if (future.isSuccess()) {
-                    restLogger.info(request.host() + ":" + request.port() + "," + "T");
-                    ctx.channel().writeAndFlush(new SocksCmdResponse(SocksCmdStatus.SUCCESS, request.addressType()))
-                            .addListener(new ChannelFutureListener() {
-                                @Override
-                                public void operationComplete(ChannelFuture channelFuture) {
-                                    ctx.pipeline().remove(SocksServerConnectHandler.this);
-                                    outboundChannel.pipeline().addLast(new RelayHandler(ctx.channel()));
-                                    ctx.pipeline().addLast(new RelayHandler(outboundChannel));
-                                }
-                            });
-                } else {
-                    restLogger.info(request.host() + ":" + request.port() + "," + "F");
-                    ctx.channel().writeAndFlush(new SocksCmdResponse(SocksCmdStatus.FAILURE, request.addressType()));
-                    SocksServerUtils.closeOnFlush(ctx.channel());
-                }
-            }
-        });
+                new GenericFutureListener<Future<Channel>>() {
+                    @Override
+                    public void operationComplete(final Future<Channel> future) throws Exception {
+                        final Channel outboundChannel = future.getNow();
+                        if (future.isSuccess()) {
+                            restLogger.info(request.host() + ":" + request.port() + "," + "T");
+                            ctx.channel()
+                               .writeAndFlush(new SocksCmdResponse(SocksCmdStatus.SUCCESS, request.addressType()))
+                               .addListener(new ChannelFutureListener() {
+                                   @Override
+                                   public void operationComplete(ChannelFuture channelFuture) {
+                                       ctx.pipeline().remove(SocksServerConnectHandler.this);
+                                       outboundChannel.pipeline().addLast(new RelayHandler(ctx.channel()));
+                                       ctx.pipeline().addLast(new RelayHandler(outboundChannel));
+                                   }
+                               });
+                        } else {
+                            restLogger.info(request.host() + ":" + request.port() + "," + "F");
+                            ctx.channel()
+                               .writeAndFlush(new SocksCmdResponse(SocksCmdStatus.FAILURE, request.addressType()));
+                            SocksServerUtils.closeOnFlush(ctx.channel());
+                        }
+                    }
+                });
 
         final Channel inboundChannel = ctx.channel();
         b.group(inboundChannel.eventLoop())
-                .channel(NioSocketChannel.class)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
-                .option(ChannelOption.SO_KEEPALIVE, true)
-                .handler(new DirectClientHandler(promise));
+         .channel(NioSocketChannel.class)
+         .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
+         .option(ChannelOption.SO_KEEPALIVE, true)
+         .handler(new DirectClientHandler(promise));
 
         b.connect(request.host(), request.port()).addListener(new ChannelFutureListener() {
             @Override

@@ -27,8 +27,6 @@ import io.netty.handler.codec.MessageToByteEncoder;
  */
 public class FakeHttpServerEncoder extends MessageToByteEncoder<ByteBuf> {
 
-    private int key = 0xA2;
-
     @Override
     protected void encode(final ChannelHandlerContext ctx, final ByteBuf msg, final ByteBuf out) throws Exception {
         int length = msg.readableBytes();
@@ -36,7 +34,7 @@ public class FakeHttpServerEncoder extends MessageToByteEncoder<ByteBuf> {
         out.writeBytes(TextUtil.toUTF8Bytes("HTTP/1.1 200 OK \r\n"));
         out.writeBytes(TextUtil.toUTF8Bytes("Content-Type: image/png\r\n"));
         out.writeBytes(TextUtil.toUTF8Bytes("X-C: " + String.format("%1$08x", length) + "\r\n"));
-        out.writeBytes(TextUtil.toUTF8Bytes("Content-Length: " +"1234" + "\r\n"));
+        out.writeBytes(TextUtil.toUTF8Bytes("Content-Length: " + "1234" + "\r\n"));
         out.writeBytes(TextUtil.toUTF8Bytes("Connection: Keep-Alive\r\n"));
         out.writeBytes(TextUtil.toUTF8Bytes("Server: nginx\r\n"));
         out.writeBytes(TextUtil.toUTF8Bytes("\r\n"));
@@ -48,9 +46,9 @@ public class FakeHttpServerEncoder extends MessageToByteEncoder<ByteBuf> {
 
             byte[] res = new byte[length];
 
-            for (int i=0; i< buf.length; i++ ) {
+            for (int i = 0; i < buf.length; i++) {
                 //res[i] = (byte)(buf[i] ^ key);
-                res[i] =  (byte)(buf[i] ^ (key & 0xFF));
+                res[i] = (byte) (buf[i] ^ (RemoteConfig.ins().getEncryptKey() & 0xFF));
             }
 
             out.writeBytes(res);

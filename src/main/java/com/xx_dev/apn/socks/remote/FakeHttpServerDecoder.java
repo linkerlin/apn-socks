@@ -32,8 +32,6 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
 
     private static final Logger logger = Logger.getLogger(FakeHttpServerDecoder.class);
 
-    private int key = 0xA2;
-
     enum STATE {
         READ_SKIP_1,
         READ_LENGTH,
@@ -42,7 +40,6 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
     }
 
     private int length;
-
 
 
     public FakeHttpServerDecoder() {
@@ -81,8 +78,8 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
 
                 byte[] res = new byte[length];
 
-                for (int i=0; i<length; i++) {
-                    res[i] =  (byte)(buf[i] ^ (key & 0xFF));
+                for (int i = 0; i < length; i++) {
+                    res[i] = (byte) (buf[i] ^ (RemoteConfig.ins().getEncryptKey() & 0xFF));
                 }
 
                 ByteBuf outBuf = ctx.alloc().buffer();

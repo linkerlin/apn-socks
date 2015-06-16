@@ -42,8 +42,6 @@ public final class SocksServer {
         }
     }
 
-    static final int PORT = Integer.parseInt(System.getProperty("port", "8889"));
-
     public static void main(String[] args) throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -53,7 +51,7 @@ public final class SocksServer {
              .channel(NioServerSocketChannel.class)
              .handler(new LoggingHandler("NET_LOGGER", LogLevel.DEBUG))
              .childHandler(new SocksServerInitializer());
-            b.bind(PORT).sync().channel().closeFuture().sync();
+            b.bind(RemoteConfig.ins().getListenPort()).sync().channel().closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();

@@ -16,7 +16,6 @@
 
 package com.xx_dev.apn.socks.local;
 
-import com.xx_dev.apn.socks.common.config.LocalConfig;
 import com.xx_dev.apn.socks.common.utils.TextUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -35,20 +34,20 @@ public class FakeHttpClientEncoder extends MessageToByteEncoder<ByteBuf> {
         out.writeBytes(TextUtil.toUTF8Bytes("POST /form.action HTTP/1.1\r\n"));
         out.writeBytes(TextUtil.toUTF8Bytes("HOST: www.baidu.com\r\n"));
         out.writeBytes(TextUtil.toUTF8Bytes("X-C: " + String.format("%1$08x", length) + "\r\n"));
-        out.writeBytes(TextUtil.toUTF8Bytes("Content-Length: " +"1234" + "\r\n"));
+        out.writeBytes(TextUtil.toUTF8Bytes("Content-Length: " + "1234" + "\r\n"));
         out.writeBytes(TextUtil.toUTF8Bytes("Connection: Keep-Alive\r\n"));
         out.writeBytes(TextUtil.toUTF8Bytes("\r\n"));
 
 
         if (length > 0) {
             byte[] buf = new byte[length];
-            msg.readBytes(buf, 0 , length);
+            msg.readBytes(buf, 0, length);
 
             byte[] res = new byte[length];
 
-            for (int i=0; i< buf.length; i++ ) {
+            for (int i = 0; i < buf.length; i++) {
                 //res[i] = (byte)(buf[i] ^ key);
-                res[i] =  (byte)(buf[i] ^ (LocalConfig.ins().getEncryptKey() & 0xFF));
+                res[i] = (byte) (buf[i] ^ (LocalConfig.ins().getEncryptKey() & 0xFF));
             }
 
             out.writeBytes(res);

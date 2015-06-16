@@ -14,7 +14,9 @@
  * under the License.
  */
 
-package com.xx_dev.apn.socks.common.config;
+package com.xx_dev.apn.socks.remote;
+
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,20 +29,18 @@ import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+public class RemoteConfig {
 
-public class LocalConfig {
-
-    private static final Logger logger = Logger.getLogger(LocalConfig.class);
+    private static final Logger logger = Logger.getLogger(RemoteConfig.class);
 
     private class OrderProperties extends Properties {
 
-        private static final long           serialVersionUID = -4627607243846121965L;
+        private static final long serialVersionUID = -4627607243846121965L;
 
-        private final LinkedHashSet<Object> keys             = new LinkedHashSet<Object>();
+        private final LinkedHashSet<Object> keys = new LinkedHashSet<Object>();
 
         public Enumeration<Object> keys() {
-            return Collections.<Object> enumeration(keys);
+            return Collections.<Object>enumeration(keys);
         }
 
         public Object put(Object key, Object value) {
@@ -65,25 +65,21 @@ public class LocalConfig {
     }
 
     // default config
-    private static final String REMOTE_HOST = "127.0.0.1";
-    private static final String REMOTE_PORT = "8889";
+    private static final String LISTEN_PORT = "8889";
     private static final String ENCRYPT_KEY = "0xA2";
-    private static final String LOCAL_PORT = "8888";
 
 
-    private final Properties    p                                     = new OrderProperties();
+    private final Properties p = new OrderProperties();
 
 
-    private static final String configFilePath = "conf/local.properties";
+    private static final String configFilePath = "conf/remote.properties";
 
-    private static final LocalConfig ins = new LocalConfig();
+    private static final RemoteConfig ins = new RemoteConfig();
 
 
-    private LocalConfig() {
-        p.put("remoteHost", REMOTE_HOST);
-        p.put("remotePort", REMOTE_PORT);
+    private RemoteConfig() {
+        p.put("listenPort", LISTEN_PORT);
         p.put("encryptKey", ENCRYPT_KEY);
-        p.put("localPort", LOCAL_PORT);
 
         File configFile = new File(configFilePath);
 
@@ -108,24 +104,16 @@ public class LocalConfig {
         }
     }
 
-    public static LocalConfig ins() {
+    public static RemoteConfig ins() {
         return ins;
     }
 
-    public final String getRemoteHost() {
-        return p.getProperty("remoteHost", REMOTE_HOST);
-    }
-
-    public final int getRemotePort() {
-        return Integer.parseInt(p.getProperty("remotePort", REMOTE_PORT));
+    public final int getListenPort() {
+        return Integer.parseInt(p.getProperty("listenPort", LISTEN_PORT));
     }
 
     public final int getEncryptKey() {
         return Integer.parseInt(p.getProperty("encryptKey", ENCRYPT_KEY), 16);
-    }
-
-    public final int getLocalPort() {
-        return Integer.parseInt(p.getProperty("localPort", LOCAL_PORT));
     }
 
 }
