@@ -67,7 +67,7 @@ public class LocalConfig {
     // default config
     private static final String REMOTE_HOST = "127.0.0.1";
     private static final String REMOTE_PORT = "8889";
-    private static final String ENCRYPT_KEY = "0xA2";
+    private static final String ENCRYPT_KEY = "A2";
     private static final String LOCAL_PORT = "8888";
 
 

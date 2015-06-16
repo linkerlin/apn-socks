@@ -17,6 +17,7 @@
 package com.xx_dev.apn.socks.remote;
 
 import com.xx_dev.apn.socks.common.utils.TextUtil;
+import com.xx_dev.apn.socks.local.LocalConfig;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;

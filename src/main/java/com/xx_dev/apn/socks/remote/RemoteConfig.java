@@ -66,7 +66,7 @@ public class RemoteConfig {
 
     // default config
     private static final String LISTEN_PORT = "8889";
-    private static final String ENCRYPT_KEY = "0xA2";
+    private static final String ENCRYPT_KEY = "A2";
 
 
     private final Properties p = new OrderProperties();
@@ -86,7 +86,7 @@ public class RemoteConfig {
         try {
             p.load(new FileInputStream(configFilePath));
         } catch (FileNotFoundException e) {
-            logger.warn("Local config not exsit, create default");
+            logger.warn("Remote config not exsit, create default");
             try {
                 configFile.getParentFile().mkdirs();
                 configFile.createNewFile();

@@ -24,8 +24,11 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelOption;
+import org.apache.log4j.Logger;
 
 public class PortForwardProxyFrontendHandler extends ChannelInboundHandlerAdapter {
+
+    private static final Logger logger = Logger.getLogger(PortForwardProxyFrontendHandler.class);
 
     private final String remoteHost;
     private final int remotePort;
@@ -54,9 +57,10 @@ public class PortForwardProxyFrontendHandler extends ChannelInboundHandlerAdapte
             public void operationComplete(ChannelFuture future) {
                 if (future.isSuccess()) {
                     // connection complete start to read first data
+                    logger.info("C: " + remoteHost + ":" + remotePort + ", T");
                     inboundChannel.read();
                 } else {
-                    // Close the connection if the connection attempt has failed.
+                    logger.info("C: " + remoteHost + ":" + remotePort + ", F");
                     inboundChannel.close();
                 }
             }
