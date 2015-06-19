@@ -38,7 +38,7 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
 
     private int flag = 0;
 
-    private ByteBuf headBuf = Unpooled.buffer();
+    private ByteBuf headBuf = Unpooled.directBuffer();
 
     private int length;
 
@@ -64,25 +64,39 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
                 }
 
                 if (flag >= 4) {
+                    //System.out.println(headBuf.readableBytes() + "" + this + " " + Thread.currentThread().getName());
                     byte[] buf = new byte[headBuf.readableBytes()];
                     headBuf.readBytes(buf);
-                    headBuf.clear();
                     String s = TextUtil.fromUTF8Bytes(buf);
+
                     String[] ss = StringUtils.split(s, "\r\n");
+
+                    //System.out.println(s + "" + this + " " + Thread.currentThread().getName());
 
 
                     for (String line : ss) {
                         if (StringUtils.startsWith(line, "X-C:")) {
                             String lenStr = StringUtils.trim(StringUtils.split(line, ":")[1]);
-                            length = Integer.parseInt(lenStr, 16);
+                            //System.out.println(lenStr + "" + this + " " + Thread.currentThread().getName());
+                            //System.out.println("*****************************************");
+                            try {
+                                length = Integer.parseInt(lenStr, 16);
+                            } catch (Throwable t) {
+                                System.out.println("--------------------------------------");
+                                System.out.println(s + "" + this + " " + Thread.currentThread().getName());
+                                System.out.println("--------------------------------------");
+                            }
+
                         }
                     }
 
                     flag = 0;
-                    this.checkpoint(STATE.READ_CONTENT);
                     break;
                 }
             }
+            headBuf.release();
+            headBuf = Unpooled.directBuffer();
+            this.checkpoint(STATE.READ_CONTENT);
         }
         case READ_CONTENT: {
             if (length > 0) {
