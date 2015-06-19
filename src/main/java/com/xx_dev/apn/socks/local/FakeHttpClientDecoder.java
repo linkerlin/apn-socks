@@ -18,8 +18,10 @@ package com.xx_dev.apn.socks.local;
 
 import com.xx_dev.apn.socks.common.utils.TextUtil;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
 
@@ -30,17 +32,19 @@ import java.util.List;
 public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecoder.STATE> {
 
     enum STATE {
-        READ_SKIP_1,
-        READ_LENGTH,
-        READ_SKIP_2,
+        READ_FAKE_HTTP,
         READ_CONTENT
     }
+
+    private int flag = 0;
+
+    private ByteBuf headBuf = Unpooled.buffer();
 
     private int length;
 
 
     public FakeHttpClientDecoder() {
-        super(STATE.READ_SKIP_1);
+        super(STATE.READ_FAKE_HTTP);
 
 
     }
@@ -48,22 +52,37 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         switch (this.state()) {
-        case READ_SKIP_1: {
-            in.skipBytes(48);
-            this.checkpoint(STATE.READ_LENGTH);
-        }
-        case READ_LENGTH: {
-            byte[] buf = new byte[8];
-            in.readBytes(buf);
+        case READ_FAKE_HTTP: {
+            for (;;) {
+                byte b = in.readByte();
+                headBuf.writeByte(b);
 
-            String s = TextUtil.fromUTF8Bytes(buf);
+                if (b == '\r' || b == '\n') {
+                    flag ++;
+                } else if (flag > 0){
+                    flag = 0;
+                }
 
-            length = Integer.parseInt(s, 16);
-            this.checkpoint(STATE.READ_SKIP_2);
-        }
-        case READ_SKIP_2: {
-            in.skipBytes(65);
-            this.checkpoint(STATE.READ_CONTENT);
+                if (flag >= 4) {
+                    byte[] buf = new byte[headBuf.readableBytes()];
+                    headBuf.readBytes(buf);
+                    headBuf.clear();
+                    String s = TextUtil.fromUTF8Bytes(buf);
+                    String[] ss = StringUtils.split(s, "\r\n");
+
+
+                    for (String line : ss) {
+                        if (StringUtils.startsWith(line, "X-C:")) {
+                            String lenStr = StringUtils.trim(StringUtils.split(line, ":")[1]);
+                            length = Integer.parseInt(lenStr, 16);
+                        }
+                    }
+
+                    flag = 0;
+                    this.checkpoint(STATE.READ_CONTENT);
+                    break;
+                }
+            }
         }
         case READ_CONTENT: {
             if (length > 0) {
@@ -83,7 +102,7 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
                 out.add(outBuf);
             }
 
-            this.checkpoint(STATE.READ_SKIP_1);
+            this.checkpoint(STATE.READ_FAKE_HTTP);
             break;
         }
         default:
