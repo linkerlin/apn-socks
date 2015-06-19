@@ -38,7 +38,7 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
 
     private int flag = 0;
 
-    private ByteBuf headBuf = Unpooled.directBuffer();
+    //private ByteBuf headBuf = Unpooled.directBuffer();
 
     private int length;
 
@@ -53,50 +53,33 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         switch (this.state()) {
         case READ_FAKE_HTTP: {
-            for (;;) {
-                byte b = in.readByte();
-                headBuf.writeByte(b);
+            byte[] buf = new byte[121];
+            in.readBytes(buf, 0 ,121);
+            String s = TextUtil.fromUTF8Bytes(buf);
 
-                if (b == '\r' || b == '\n') {
-                    flag ++;
-                } else if (flag > 0){
-                    flag = 0;
-                }
+            String[] ss = StringUtils.split(s, "\r\n");
 
-                if (flag >= 4) {
-                    //System.out.println(headBuf.readableBytes() + "" + this + " " + Thread.currentThread().getName());
-                    byte[] buf = new byte[headBuf.readableBytes()];
-                    headBuf.readBytes(buf);
-                    String s = TextUtil.fromUTF8Bytes(buf);
-
-                    String[] ss = StringUtils.split(s, "\r\n");
-
-                    //System.out.println(s + "" + this + " " + Thread.currentThread().getName());
+            //System.out.println(s + "" + this + " " + Thread.currentThread().getName());
 
 
-                    for (String line : ss) {
-                        if (StringUtils.startsWith(line, "X-C:")) {
-                            String lenStr = StringUtils.trim(StringUtils.split(line, ":")[1]);
-                            //System.out.println(lenStr + "" + this + " " + Thread.currentThread().getName());
-                            //System.out.println("*****************************************");
-                            try {
-                                length = Integer.parseInt(lenStr, 16);
-                            } catch (Throwable t) {
-                                System.out.println("--------------------------------------");
-                                System.out.println(s + "" + this + " " + Thread.currentThread().getName());
-                                System.out.println("--------------------------------------");
-                            }
-
-                        }
+            for (String line : ss) {
+                if (StringUtils.startsWith(line, "X-C:")) {
+                    String lenStr = StringUtils.trim(StringUtils.split(line, ":")[1]);
+                    //System.out.println(lenStr + "" + this + " " + Thread.currentThread().getName());
+                    //System.out.println("*****************************************");
+                    try {
+                        length = Integer.parseInt(lenStr, 16);
+                    } catch (Throwable t) {
+                        System.out.println("--------------------------------------");
+                        System.out.println(s + "" + this + " " + Thread.currentThread().getName());
+                        System.out.println("--------------------------------------");
                     }
 
-                    flag = 0;
-                    break;
                 }
             }
-            headBuf.release();
-            headBuf = Unpooled.directBuffer();
+
             this.checkpoint(STATE.READ_CONTENT);
+
         }
         case READ_CONTENT: {
             if (length > 0) {
