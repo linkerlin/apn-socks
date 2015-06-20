@@ -17,25 +17,23 @@
 package com.xx_dev.apn.socks.remote;
 
 import com.xx_dev.apn.socks.common.utils.TextUtil;
+import com.xx_dev.apn.socks.local.LocalConfig;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufProcessor;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.List;
 
-/**
- * @author xmx
- * @version $Id: com.xx_dev.apn.proxy.ApnProxyAESDecoder 14-6-28 12:09 (xmx) Exp $
- */
+
 public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecoder.STATE> {
 
     private static final Logger logger = Logger.getLogger(FakeHttpServerDecoder.class);
 
     enum STATE {
-        READ_SKIP_1,
-        READ_LENGTH,
-        READ_SKIP_2,
+        READ_FAKE_HTTP,
         READ_CONTENT
     }
 
@@ -43,7 +41,7 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
 
 
     public FakeHttpServerDecoder() {
-        super(STATE.READ_SKIP_1);
+        super(STATE.READ_FAKE_HTTP);
 
 
     }
@@ -51,27 +49,68 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         switch (this.state()) {
-        case READ_SKIP_1: {
-            in.skipBytes(54);
-            this.checkpoint(STATE.READ_LENGTH);
-        }
-        case READ_LENGTH: {
-            byte[] buf = new byte[8];
-            in.readBytes(buf);
+        case READ_FAKE_HTTP: {
+            int fakeHttpHeadStartIndex = in.readerIndex();
 
+            int fakeHttpHeadEndIndex = in.forEachByte(new ByteBufProcessor() {
+                int c = 0;
+                @Override
+                public boolean process(byte value) throws Exception {
+
+                    if (value == '\r' || value == '\n') {
+                        c++;
+                    } else {
+                        c = 0;
+                    }
+
+                    //logger.info("value=" + value + ", c=" + c);
+
+                    if (c >= 4) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            });
+
+            logger.debug("s: " + fakeHttpHeadStartIndex);
+            logger.debug("e: " + fakeHttpHeadEndIndex);
+
+            if (fakeHttpHeadEndIndex == -1) {
+                logger.warn("w: " + fakeHttpHeadStartIndex);
+                break;
+            }
+
+            byte[] buf = new byte[fakeHttpHeadEndIndex - fakeHttpHeadStartIndex + 1];
+            in.readBytes(buf, 0 ,fakeHttpHeadEndIndex - fakeHttpHeadStartIndex + 1);
             String s = TextUtil.fromUTF8Bytes(buf);
 
+            //logger.info(s);
 
-            length = Integer.parseInt(s, 16);
+            String[] ss = StringUtils.split(s, "\r\n");
 
-            this.checkpoint(STATE.READ_SKIP_2);
-        }
-        case READ_SKIP_2: {
-            in.skipBytes(50);
+            //System.out.println(s + "" + this + " " + Thread.currentThread().getName());
+
+
+            for (String line : ss) {
+                if (StringUtils.startsWith(line, "X-C:")) {
+                    String lenStr = StringUtils.trim(StringUtils.split(line, ":")[1]);
+                    //System.out.println(lenStr + "" + this + " " + Thread.currentThread().getName());
+                    //System.out.println("*****************************************");
+                    try {
+                        length = Integer.parseInt(lenStr, 16);
+                    } catch (Throwable t) {
+                        logger.error("--------------------------------------");
+                        logger.error(s + "" + this + " " + Thread.currentThread().getName());
+                        logger.error("--------------------------------------");
+                    }
+
+                }
+            }
+
             this.checkpoint(STATE.READ_CONTENT);
         }
         case READ_CONTENT: {
-
             if (length > 0) {
                 byte[] buf = new byte[length];
                 in.readBytes(buf, 0, length);
@@ -89,12 +128,13 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
                 out.add(outBuf);
             }
 
-            this.checkpoint(STATE.READ_SKIP_1);
+            this.checkpoint(STATE.READ_FAKE_HTTP);
             break;
         }
         default:
             throw new Error("Shouldn't reach here.");
         }
-    }
 
+
+    }
 }

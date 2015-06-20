@@ -82,6 +82,7 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
             logger.debug("e: " + fakeHttpHeadEndIndex);
 
             if (fakeHttpHeadEndIndex == -1) {
+                logger.warn("w: " + fakeHttpHeadStartIndex);
                 break;
             }
 
@@ -104,9 +105,9 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
                     try {
                         length = Integer.parseInt(lenStr, 16);
                     } catch (Throwable t) {
-                        System.out.println("--------------------------------------");
-                        System.out.println(s + "" + this + " " + Thread.currentThread().getName());
-                        System.out.println("--------------------------------------");
+                        logger.error("--------------------------------------");
+                        logger.error(s + "" + this + " " + Thread.currentThread().getName());
+                        logger.error("--------------------------------------");
                     }
 
                 }
