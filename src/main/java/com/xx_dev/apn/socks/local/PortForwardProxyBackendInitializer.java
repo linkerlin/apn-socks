@@ -22,10 +22,6 @@ import io.netty.channel.socket.SocketChannel;
 
 import javax.net.ssl.SSLException;
 
-/**
- * @author xmx
- * @version $Id: com.xx_dev.port_forwared.HexDumpProxyBackendInitializer 2015-03-17 21:20 (xmx) Exp $
- */
 public class PortForwardProxyBackendInitializer extends ChannelInitializer<SocketChannel> {
     private final Channel inboundChannel;
 

@@ -17,7 +17,6 @@
 package com.xx_dev.apn.socks.remote;
 
 import com.xx_dev.apn.socks.common.utils.TextUtil;
-import com.xx_dev.apn.socks.local.LocalConfig;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufProcessor;
 import io.netty.channel.ChannelHandlerContext;
@@ -54,6 +53,7 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
 
             int fakeHttpHeadEndIndex = in.forEachByte(new ByteBufProcessor() {
                 int c = 0;
+
                 @Override
                 public boolean process(byte value) throws Exception {
 
@@ -82,7 +82,7 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
             }
 
             byte[] buf = new byte[fakeHttpHeadEndIndex - fakeHttpHeadStartIndex + 1];
-            in.readBytes(buf, 0 ,fakeHttpHeadEndIndex - fakeHttpHeadStartIndex + 1);
+            in.readBytes(buf, 0, fakeHttpHeadEndIndex - fakeHttpHeadStartIndex + 1);
             String s = TextUtil.fromUTF8Bytes(buf);
 
             //logger.info(s);

@@ -19,7 +19,6 @@ package com.xx_dev.apn.socks.local;
 import com.xx_dev.apn.socks.common.utils.TextUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufProcessor;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
 import org.apache.commons.lang.StringUtils;
@@ -27,10 +26,6 @@ import org.apache.log4j.Logger;
 
 import java.util.List;
 
-/**
- * @author xmx
- * @version $Id: com.xx_dev.apn.proxy.ApnProxyAESDecoder 14-6-28 12:09 (xmx) Exp $
- */
 public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecoder.STATE> {
 
     private static final Logger logger = Logger.getLogger(FakeHttpClientDecoder.class);
@@ -59,6 +54,7 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
 
             int fakeHttpHeadEndIndex = in.forEachByte(new ByteBufProcessor() {
                 int c = 0;
+
                 @Override
                 public boolean process(byte value) throws Exception {
 
@@ -87,7 +83,7 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
             }
 
             byte[] buf = new byte[fakeHttpHeadEndIndex - fakeHttpHeadStartIndex + 1];
-            in.readBytes(buf, 0 ,fakeHttpHeadEndIndex - fakeHttpHeadStartIndex + 1);
+            in.readBytes(buf, 0, fakeHttpHeadEndIndex - fakeHttpHeadStartIndex + 1);
             String s = TextUtil.fromUTF8Bytes(buf);
 
             //logger.info(s);

@@ -21,10 +21,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
-/**
- * @author xmx
- * @version $Id: com.xx_dev.apn.socks.remote.FakeHttpServerEncoder 2015-06-13 19:16 (xmx) Exp $
- */
 public class FakeHttpServerEncoder extends MessageToByteEncoder<ByteBuf> {
 
     @Override
