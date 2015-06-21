@@ -30,24 +30,36 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
 
     private static final Logger logger = Logger.getLogger(FakeHttpClientDecoder.class);
 
+    private static final Logger perfLogger = Logger.getLogger("PERF_LOGGER");
+
     enum STATE {
         READ_FAKE_HTTP,
         READ_CONTENT
     }
-
-    //private ByteBuf headBuf = Unpooled.directBuffer();
 
     private int length;
 
 
     public FakeHttpClientDecoder() {
         super(STATE.READ_FAKE_HTTP);
-
-
     }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+        int startReaderIndex = in.readerIndex();
+
+        long start = System.nanoTime();
+        this._decode(ctx, in, out);
+        long end = System.nanoTime();
+
+        int endReaderIndex = in.readerIndex();
+
+        perfLogger.info("local decode: " + (endReaderIndex - startReaderIndex) + ", " + (end - start));
+
+    }
+
+
+    protected void _decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         switch (this.state()) {
         case READ_FAKE_HTTP: {
             int fakeHttpHeadStartIndex = in.readerIndex();
