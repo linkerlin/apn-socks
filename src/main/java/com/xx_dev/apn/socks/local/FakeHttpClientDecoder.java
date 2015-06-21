@@ -20,6 +20,7 @@ import com.xx_dev.apn.socks.common.utils.TextUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
+import org.apache.log4j.Logger;
 
 import java.util.List;
 
@@ -28,6 +29,8 @@ import java.util.List;
  * @version $Id: com.xx_dev.apn.proxy.ApnProxyAESDecoder 14-6-28 12:09 (xmx) Exp $
  */
 public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecoder.STATE> {
+
+    private static final Logger perfLogger = Logger.getLogger("PERF_LOGGER");
 
     enum STATE {
         READ_SKIP_1,
@@ -41,12 +44,24 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
 
     public FakeHttpClientDecoder() {
         super(STATE.READ_SKIP_1);
-
-
     }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+        int startReaderIndex = in.readerIndex();
+
+        long start = System.nanoTime();
+        this._decode(ctx, in, out);
+        long end = System.nanoTime();
+
+        int endReaderIndex = in.readerIndex();
+
+        perfLogger.info("local decode: " + (endReaderIndex - startReaderIndex) + ", " + (end - start));
+
+    }
+
+
+    protected void _decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         switch (this.state()) {
         case READ_SKIP_1: {
             in.skipBytes(48);

@@ -50,6 +50,15 @@
     </layout>
   </appender>
 
+  <appender name="PERF_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="file" value="log/perf.log"/>
+    <param name="append" value="true"/>
+    <param name="encoding" value="UTF-8"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d %t %5p -: %m%n"/>
+    </layout>
+  </appender>
+
   <logger name="REST_LOGGER" additivity="false">
     <level value="info"/>
     <appender-ref ref="REST_APPENDER"/>
@@ -63,6 +72,11 @@
   <logger name="com.xx_dev.apn.socks" additivity="false">
     <level value="info"/>
     <appender-ref ref="DEFAULT_APPENDER"/>
+  </logger>
+
+  <logger name="PERF_LOGGER" additivity="false">
+    <level value="info"/>
+    <appender-ref ref="PERF_APPENDER"/>
   </logger>
 
   <root>
