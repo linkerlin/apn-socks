@@ -35,7 +35,7 @@ public class LocalConfig {
 
     private class OrderProperties extends Properties {
 
-        private static final long serialVersionUID = -4627607243846121965L;
+        private static final long serialVersionUID = -1L;
 
         private final LinkedHashSet<Object> keys = new LinkedHashSet<Object>();
 
@@ -69,6 +69,7 @@ public class LocalConfig {
     private static final String REMOTE_PORT = "8889";
     private static final String ENCRYPT_KEY = "A2";
     private static final String LOCAL_PORT = "8888";
+    private static final String USER = "user1";
 
 
     private final Properties p = new OrderProperties();
@@ -84,6 +85,7 @@ public class LocalConfig {
         p.put("remotePort", REMOTE_PORT);
         p.put("encryptKey", ENCRYPT_KEY);
         p.put("localPort", LOCAL_PORT);
+        p.put("user", USER);
 
         File configFile = new File(configFilePath);
 
@@ -126,6 +128,10 @@ public class LocalConfig {
 
     public final int getLocalPort() {
         return Integer.parseInt(p.getProperty("localPort", LOCAL_PORT));
+    }
+
+    public final String getUser() {
+        return p.getProperty("user", USER);
     }
 
 }

@@ -30,7 +30,7 @@ public class FakeHttpClientEncoder extends MessageToByteEncoder<ByteBuf> {
         out.writeBytes(TextUtil.toUTF8Bytes("POST /form.action HTTP/1.1\r\n"));
         out.writeBytes(TextUtil.toUTF8Bytes("HOST: www.baidu.com\r\n"));
         out.writeBytes(TextUtil.toUTF8Bytes("X-C: " + String.format("%1$08x", length) + "\r\n"));
-        out.writeBytes(TextUtil.toUTF8Bytes("X-U: " + "APN-SOCKS" + "\r\n"));
+        out.writeBytes(TextUtil.toUTF8Bytes("X-U: " + LocalConfig.ins().getUser() + "\r\n"));
         out.writeBytes(TextUtil.toUTF8Bytes("Content-Length: " + "1234" + "\r\n"));
         out.writeBytes(TextUtil.toUTF8Bytes("Connection: Keep-Alive\r\n"));
         out.writeBytes(TextUtil.toUTF8Bytes("\r\n"));
