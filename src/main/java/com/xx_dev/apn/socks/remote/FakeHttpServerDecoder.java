@@ -119,6 +119,11 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
                     }
 
                 }
+
+                if (StringUtils.startsWith(line, "X-U:")) {
+                    String user = StringUtils.trim(StringUtils.split(line, ":")[1]);
+                    logger.info(user);
+                }
             }
 
             this.checkpoint(STATE.READ_CONTENT);
