@@ -20,8 +20,13 @@ import com.xx_dev.apn.socks.common.utils.TextUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import org.apache.log4j.Logger;
 
 public class FakeHttpClientEncoder extends MessageToByteEncoder<ByteBuf> {
+
+    private static final Logger logger = Logger.getLogger(FakeHttpClientEncoder.class);
+
+    private static final Logger trafficLogger = Logger.getLogger("TRAFFIC_LOGGER");
 
     @Override
     protected void encode(final ChannelHandlerContext ctx, final ByteBuf msg, final ByteBuf out) throws Exception {
@@ -46,6 +51,8 @@ public class FakeHttpClientEncoder extends MessageToByteEncoder<ByteBuf> {
                 //res[i] = (byte)(buf[i] ^ key);
                 res[i] = (byte) (buf[i] ^ (LocalConfig.ins().getEncryptKey() & 0xFF));
             }
+
+            trafficLogger.info("U," + LocalConfig.ins().getUser()+"," +length);
 
             out.writeBytes(res);
         }
