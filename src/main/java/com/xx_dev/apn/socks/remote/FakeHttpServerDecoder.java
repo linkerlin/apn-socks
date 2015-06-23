@@ -125,7 +125,7 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
 
                 if (StringUtils.startsWith(line, "X-U:")) {
                     String user = StringUtils.trim(StringUtils.split(line, ":")[1]);
-                    ctx.attr(NettyAttributeKey.LINK_USER).set(user);
+                    ctx.channel().attr(NettyAttributeKey.LINK_USER).set(user);
                     logger.info(user);
                 }
             }
@@ -133,8 +133,11 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
             this.checkpoint(STATE.READ_CONTENT);
         }
         case READ_CONTENT: {
+
+            trafficLogger.info("U," +  ctx.channel().attr(NettyAttributeKey.LINK_USER).get()+"," +length);
+
             if (length > 0) {
-                trafficLogger.info("U," + ctx.attr(NettyAttributeKey.LINK_USER).get()+"," +length);
+
 
                 byte[] buf = new byte[length];
                 in.readBytes(buf, 0, length);
