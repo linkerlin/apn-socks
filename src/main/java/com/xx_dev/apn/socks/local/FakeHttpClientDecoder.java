@@ -114,7 +114,7 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
                     //System.out.println("*****************************************");
                     try {
                         length = Integer.parseInt(lenStr, 16);
-                        trafficLogger.info("D," + LocalConfig.ins().getUser()+"," +length);
+                        trafficLogger.info("D," + LocalConfig.ins().getUser() + "," + length);
                     } catch (Throwable t) {
                         logger.error("--------------------------------------");
                         logger.error(s + "" + this + " " + Thread.currentThread().getName());
