@@ -59,6 +59,15 @@
     </layout>
   </appender>
 
+  <appender name="TRAFFIC_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="file" value="log/traffic.log"/>
+    <param name="append" value="true"/>
+    <param name="encoding" value="UTF-8"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d %t %5p -: %m%n"/>
+    </layout>
+  </appender>
+
   <logger name="REST_LOGGER" additivity="false">
     <level value="info"/>
     <appender-ref ref="REST_APPENDER"/>
@@ -77,6 +86,11 @@
   <logger name="PERF_LOGGER" additivity="false">
     <level value="info"/>
     <appender-ref ref="PERF_APPENDER"/>
+  </logger>
+
+  <logger name="TRAFFIC_LOGGER" additivity="false">
+    <level value="info"/>
+    <appender-ref ref="TRAFFIC_APPENDER"/>
   </logger>
 
   <root>

@@ -14,19 +14,12 @@
  * under the License.
  */
 
-package com.xx_dev.apn.socks.test;
+package com.xx_dev.apn.socks.remote;
 
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.socks.SocksCmdResponse;
+import io.netty.util.AttributeKey;
 
-/**
- * @author xmx
- * @version $Id: com.xx_dev.apn.socks.test.SocksClientConnectHandler 2015-02-28 16:38 (xmx) Exp $
- */
-public class SocksClientConnectHandler extends SimpleChannelInboundHandler<SocksCmdResponse> {
-    @Override
-    protected void channelRead0(ChannelHandlerContext ctx, SocksCmdResponse msg) throws Exception {
+public class NettyAttributeKey {
 
-    }
+    public static final AttributeKey<String> LINK_USER = AttributeKey.valueOf("LINK_USER");
+
 }

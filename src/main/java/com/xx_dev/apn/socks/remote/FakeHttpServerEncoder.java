@@ -20,8 +20,11 @@ import com.xx_dev.apn.socks.common.utils.TextUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import org.apache.log4j.Logger;
 
 public class FakeHttpServerEncoder extends MessageToByteEncoder<ByteBuf> {
+
+    private static final Logger trafficLogger = Logger.getLogger("TRAFFIC_LOGGER");
 
     @Override
     protected void encode(final ChannelHandlerContext ctx, final ByteBuf msg, final ByteBuf out) throws Exception {
@@ -37,6 +40,8 @@ public class FakeHttpServerEncoder extends MessageToByteEncoder<ByteBuf> {
 
 
         if (length > 0) {
+            trafficLogger.info("D," + ctx.channel().attr(NettyAttributeKey.LINK_USER).get() + "," + length);
+
             byte[] buf = new byte[length];
             msg.readBytes(buf);
 

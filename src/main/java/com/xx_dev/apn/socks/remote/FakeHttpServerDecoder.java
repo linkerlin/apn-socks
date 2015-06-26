@@ -33,6 +33,8 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
 
     private static final Logger perfLogger = Logger.getLogger("PERF_LOGGER");
 
+    private static final Logger trafficLogger = Logger.getLogger("TRAFFIC_LOGGER");
+
     enum STATE {
         READ_FAKE_HTTP,
         READ_CONTENT
@@ -55,7 +57,7 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
 
         int endReaderIndex = in.readerIndex();
 
-        perfLogger.info("remote decode: " + (endReaderIndex - startReaderIndex) + ", " + (end - start));
+        perfLogger.debug("remote decode: " + (endReaderIndex - startReaderIndex) + ", " + (end - start));
 
     }
 
@@ -122,6 +124,7 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
 
                 if (StringUtils.startsWith(line, "X-U:")) {
                     String user = StringUtils.trim(StringUtils.split(line, ":")[1]);
+                    ctx.channel().attr(NettyAttributeKey.LINK_USER).set(user);
                     logger.info(user);
                 }
             }
@@ -129,7 +132,12 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
             this.checkpoint(STATE.READ_CONTENT);
         }
         case READ_CONTENT: {
+
+            trafficLogger.info("U," + ctx.channel().attr(NettyAttributeKey.LINK_USER).get() + "," + length);
+
             if (length > 0) {
+
+
                 byte[] buf = new byte[length];
                 in.readBytes(buf, 0, length);
 

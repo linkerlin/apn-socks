@@ -32,6 +32,8 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
 
     private static final Logger perfLogger = Logger.getLogger("PERF_LOGGER");
 
+    private static final Logger trafficLogger = Logger.getLogger("TRAFFIC_LOGGER");
+
     enum STATE {
         READ_FAKE_HTTP,
         READ_CONTENT
@@ -54,7 +56,7 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
 
         int endReaderIndex = in.readerIndex();
 
-        perfLogger.info("local decode: " + (endReaderIndex - startReaderIndex) + ", " + (end - start));
+        perfLogger.debug("local decode: " + (endReaderIndex - startReaderIndex) + ", " + (end - start));
 
     }
 
@@ -112,6 +114,7 @@ public class FakeHttpClientDecoder extends ReplayingDecoder<FakeHttpClientDecode
                     //System.out.println("*****************************************");
                     try {
                         length = Integer.parseInt(lenStr, 16);
+                        trafficLogger.info("D," + LocalConfig.ins().getUser() + "," + length);
                     } catch (Throwable t) {
                         logger.error("--------------------------------------");
                         logger.error(s + "" + this + " " + Thread.currentThread().getName());
