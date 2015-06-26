@@ -40,7 +40,7 @@ public class FakeHttpServerEncoder extends MessageToByteEncoder<ByteBuf> {
 
 
         if (length > 0) {
-            trafficLogger.info("D," +  ctx.channel().attr(NettyAttributeKey.LINK_USER).get()+"," +length);
+            trafficLogger.info("D," + ctx.channel().attr(NettyAttributeKey.LINK_USER).get() + "," + length);
 
             byte[] buf = new byte[length];
             msg.readBytes(buf);

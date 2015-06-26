@@ -52,7 +52,7 @@ public class FakeHttpClientEncoder extends MessageToByteEncoder<ByteBuf> {
                 res[i] = (byte) (buf[i] ^ (LocalConfig.ins().getEncryptKey() & 0xFF));
             }
 
-            trafficLogger.info("U," + LocalConfig.ins().getUser()+"," +length);
+            trafficLogger.info("U," + LocalConfig.ins().getUser() + "," + length);
 
             out.writeBytes(res);
         }

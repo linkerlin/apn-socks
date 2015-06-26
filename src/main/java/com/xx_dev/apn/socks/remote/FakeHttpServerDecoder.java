@@ -17,7 +17,6 @@
 package com.xx_dev.apn.socks.remote;
 
 import com.xx_dev.apn.socks.common.utils.TextUtil;
-import com.xx_dev.apn.socks.local.LocalConfig;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufProcessor;
 import io.netty.channel.ChannelHandlerContext;
@@ -134,7 +133,7 @@ public class FakeHttpServerDecoder extends ReplayingDecoder<FakeHttpServerDecode
         }
         case READ_CONTENT: {
 
-            trafficLogger.info("U," +  ctx.channel().attr(NettyAttributeKey.LINK_USER).get()+"," +length);
+            trafficLogger.info("U," + ctx.channel().attr(NettyAttributeKey.LINK_USER).get() + "," + length);
 
             if (length > 0) {
 
