@@ -21,39 +21,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-  <repositories>
-    <repository>
-      <id>mvn.xx-dev.net</id>
-      <name>mvn.xx-dev.net repository</name>
-      <url>http://mvn.xx-dev.net/content/groups/public</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>mvn.xx-dev.net</id>
-      <name>mvn.xx-dev.net repository</name>
-      <url>http://mvn.xx-dev.net/content/groups/public</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
-
-  <distributionManagement>
-    <repository>
-      <id>mvn.xx-dev.net.release</id>
-      <url>http://mvn.xx-dev.net/content/repositories/releases/</url>
-    </repository>
-    <snapshotRepository>
-      <id>mvn.xx-dev.net.snapshots</id>
-      <url>http://mvn.xx-dev.net/content/repositories/snapshots/</url>
-    </snapshotRepository>
-  </distributionManagement>
-
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -81,7 +48,7 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-all</artifactId>
-      <version>4.0.28.Final</version>
+      <version>4.0.29.Final</version>
     </dependency>
 
     <dependency>
